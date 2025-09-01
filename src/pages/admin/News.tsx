@@ -10,7 +10,8 @@ import {
   Filter,
   Eye,
   Calendar,
-  Tag
+  Tag,
+  Star
 } from 'lucide-react';
 
 const AdminNews = () => {
