@@ -97,6 +97,9 @@ const Gallery = () => {
       title: 'درپوش فلزی طلایی',
       category: 'cap',
       image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
+      description: 'درپوش فلزی با پوشش طلایی'
+    }
+  ];
 
   const filteredItems = galleryItems.filter(item => 
     selectedCategory === 'all' || item.category === selectedCategory
