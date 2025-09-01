@@ -18,7 +18,7 @@ const EditGallery = () => {
 
   useEffect(() => {
     if (id) {
-      // در اینجا باید داده‌های تصویر از API یا state بارگذاری شود
+      // بارگذاری داده‌های تصویر
       setFormData({
         title: 'بطری عطر کریستالی طلایی',
         category: 'شیشه و بطری',

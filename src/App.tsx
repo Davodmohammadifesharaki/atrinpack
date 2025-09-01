@@ -28,6 +28,8 @@ import AddProduct from './pages/admin/AddProduct';
 import EditProduct from './pages/admin/EditProduct';
 import AddNews from './pages/admin/AddNews';
 import EditNews from './pages/admin/EditNews';
+import AddGallery from './pages/admin/AddGallery';
+import EditGallery from './pages/admin/EditGallery';
 
 function App() {
   return (
@@ -55,6 +57,8 @@ function App() {
           <Route path="/admin/news/add" element={<AddNews />} />
           <Route path="/admin/news/edit/:id" element={<EditNews />} />
           <Route path="/admin/gallery" element={<AdminGallery />} />
+          <Route path="/admin/gallery/add" element={<AddGallery />} />
+          <Route path="/admin/gallery/edit/:id" element={<EditGallery />} />
           <Route path="/admin/contact" element={<AdminContact />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/settings" element={<AdminSettings />} />

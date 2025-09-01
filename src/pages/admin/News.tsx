@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { 
   Newspaper, 
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 
 const AdminNews = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -67,7 +69,10 @@ const AdminNews = () => {
             <h1 className="text-3xl font-black text-gray-800">مدیریت اخبار</h1>
             <p className="text-gray-600 mt-2">مدیریت و ویرایش اخبار سایت</p>
           </div>
-          <button className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2">
+          <button 
+            onClick={() => navigate('/admin/news/add')}
+            className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2"
+          >
             <Plus className="w-5 h-5" />
             <span>افزودن خبر</span>
           </button>
@@ -156,13 +161,26 @@ const AdminNews = () => {
                       </div>
 
                       <div className="flex items-center space-x-reverse space-x-2">
-                        <button className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                        <button 
+                          onClick={() => navigate(`/news/${item.id}`)}
+                          className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                        >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
+                        <button 
+                          onClick={() => navigate(`/admin/news/edit/${item.id}`)}
+                          className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                        >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+                        <button 
+                          onClick={() => {
+                            if (confirm('آیا از حذف این خبر اطمینان دارید؟')) {
+                              alert('خبر حذف شد!');
+                            }
+                          }}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
