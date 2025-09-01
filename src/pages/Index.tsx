@@ -21,28 +21,33 @@ import {
   Truck,
   HeadphonesIcon,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  TrendingUp,
+  Package,
+  Heart
 } from 'lucide-react';
 
 const Index = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [currentNewsSlide, setCurrentNewsSlide] = useState(0);
 
-  // نمونه محصولات ویژه (گرید ۳×۳)
+  // محصولات ویژه - گرید ۳×۳
   const featuredProducts = [
     {
       id: 1,
       name: 'بطری عطر کریستالی 50ml',
       category: 'شیشه و بطری',
       image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isNew: true,
       isFeatured: true
     },
     {
       id: 2,
-      name: 'پمپ اسپری طلایی',
+      name: 'پمپ اسپری طلایی لوکس',
       category: 'پمپ و اسپری',
       image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isFeatured: true
     },
     {
@@ -50,6 +55,7 @@ const Index = () => {
       name: 'درپوش هنری نقره‌ای',
       category: 'درپوش',
       image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isNew: true
     },
     {
@@ -57,6 +63,7 @@ const Index = () => {
       name: 'اسانس گل رز طبیعی',
       category: 'اسانس',
       image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isFeatured: true
     },
     {
@@ -64,6 +71,7 @@ const Index = () => {
       name: 'بطری شیشه‌ای کلاسیک 100ml',
       category: 'شیشه و بطری',
       image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isNew: true
     },
     {
@@ -71,6 +79,7 @@ const Index = () => {
       name: 'پمپ مه‌پاش پریمیوم',
       category: 'پمپ و اسپری',
       image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isFeatured: true
     },
     {
@@ -78,6 +87,7 @@ const Index = () => {
       name: 'درپوش چوبی دست‌ساز',
       category: 'درپوش',
       image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isNew: true
     },
     {
@@ -85,19 +95,21 @@ const Index = () => {
       name: 'دستگاه پلمپر اتوماتیک',
       category: 'پلمپر',
       image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isFeatured: true
     },
     {
       id: 9,
-      name: 'شیشه ویژه کریستالی',
+      name: 'شیشه ویژه کریستالی لوکس',
       category: 'شیشه و بطری',
       image: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
       isNew: true,
       isFeatured: true
     }
   ];
 
-  // نمونه اخبار برای کاروسل
+  // اخبار برای کاروسل ۴ کارتی
   const latestNews = [
     {
       id: 1,
@@ -168,13 +180,35 @@ const Index = () => {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-gray-800 mb-4">محصولات ویژه آترین پک</h2>
-            <p className="text-xl text-gray-600">برترین محصولات بسته‌بندی لوکس</p>
+            <div className="flex items-center justify-center mb-6">
+              <Crown className="w-12 h-12 text-amber-500 ml-4" />
+              <h2 className="text-4xl font-black text-gray-800">محصولات ویژه آترین پک</h2>
+            </div>
+            <p className="text-xl text-gray-600">برترین محصولات بسته‌بندی لوکس با کیفیت بین‌المللی</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
+              <div key={product.id} className="group">
+                <ProductCard {...product} />
+                {/* دکمه‌های هاور */}
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4 flex gap-3">
+                  <button 
+                    onClick={() => window.location.href = '/mix-match'}
+                    className="flex-1 bg-purple-500 text-white py-2 px-4 rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>شخصی‌سازی</span>
+                  </button>
+                  <button 
+                    onClick={() => setIsContactModalOpen(true)}
+                    className="flex-1 bg-amber-500 text-white py-2 px-4 rounded-xl font-bold hover:bg-amber-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                  >
+                    <Heart className="w-4 h-4" />
+                    <span>استعلام قیمت</span>
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
           
@@ -183,7 +217,7 @@ const Index = () => {
               onClick={() => window.location.href = '/products'}
               className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center space-x-reverse space-x-2 mx-auto"
             >
-              <span>سایر محصولات</span>
+              <span>مشاهده سایر محصولات</span>
               <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
@@ -194,7 +228,10 @@ const Index = () => {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-gray-800 mb-4">آخرین اخبار آترین پک</h2>
+            <div className="flex items-center justify-center mb-6">
+              <MessageCircle className="w-12 h-12 text-red-500 ml-4" />
+              <h2 className="text-4xl font-black text-gray-800">آخرین اخبار آترین پک</h2>
+            </div>
             <p className="text-xl text-gray-600">جدیدترین اخبار و رویدادهای شرکت</p>
           </div>
           
@@ -235,7 +272,7 @@ const Index = () => {
                   onClick={() => goToNewsSlide(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     index === currentNewsSlide 
-                      ? 'bg-blue-600 scale-125' 
+                      ? 'bg-red-600 scale-125' 
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                 />
@@ -248,7 +285,7 @@ const Index = () => {
               onClick={() => window.location.href = '/news'}
               className="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center space-x-reverse space-x-2 mx-auto"
             >
-              <span>مشاهده اخبار</span>
+              <span>مشاهده همه اخبار</span>
               <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
@@ -260,7 +297,10 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-4xl font-black text-gray-800">درباره آترین پک</h2>
+              <div className="flex items-center mb-6">
+                <Crown className="w-12 h-12 text-amber-500 ml-4" />
+                <h2 className="text-4xl font-black text-gray-800">درباره آترین پک</h2>
+              </div>
               <p className="text-xl text-gray-600 leading-relaxed">
                 آترین پک با بیش از ۱۵ سال تجربه در صنعت بسته‌بندی لوکس، 
                 تولیدکننده انواع شیشه‌های عطر، پمپ‌های اسپری، درپوش‌های هنری 
@@ -271,6 +311,25 @@ const Index = () => {
                 در صنعت بسته‌بندی لوکس کسب کنیم و محصولاتمان در بازارهای داخلی و خارجی 
                 مورد استقبال قرار گرفته است.
               </p>
+              
+              {/* ویژگی‌های کلیدی */}
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                <div className="flex items-center space-x-reverse space-x-3 p-4 bg-green-50 rounded-xl">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
+                  <div>
+                    <div className="font-bold text-gray-800">ISO 9001:2015</div>
+                    <div className="text-sm text-gray-600">گواهینامه کیفیت</div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-reverse space-x-3 p-4 bg-blue-50 rounded-xl">
+                  <Globe className="w-8 h-8 text-blue-500" />
+                  <div>
+                    <div className="font-bold text-gray-800">صادرات</div>
+                    <div className="text-sm text-gray-600">۱۰ کشور</div>
+                  </div>
+                </div>
+              </div>
+              
               <button 
                 onClick={() => window.location.href = '/about'}
                 className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center space-x-reverse space-x-2"
@@ -305,7 +364,10 @@ const Index = () => {
       {/* تماس سریع */}
       <section className="py-20 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black mb-6">مشاوره رایگان و استعلام قیمت</h2>
+          <div className="flex items-center justify-center mb-6">
+            <Phone className="w-12 h-12 ml-4" />
+            <h2 className="text-4xl font-black">مشاوره رایگان و استعلام قیمت</h2>
+          </div>
           <p className="text-xl text-amber-100 mb-8 leading-relaxed">
             برای دریافت مشاوره تخصصی و قیمت دقیق محصولات همین حالا تماس بگیرید
           </p>
@@ -333,7 +395,10 @@ const Index = () => {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-gray-800 mb-4">دستاوردهای آترین پک</h2>
+            <div className="flex items-center justify-center mb-6">
+              <TrendingUp className="w-12 h-12 text-blue-500 ml-4" />
+              <h2 className="text-4xl font-black text-gray-800">دستاوردهای آترین پک</h2>
+            </div>
             <p className="text-xl text-gray-600">نتایج ۱۵ سال تلاش مستمر</p>
           </div>
           
