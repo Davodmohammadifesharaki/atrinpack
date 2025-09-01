@@ -24,12 +24,21 @@ import {
   ChevronRight,
   TrendingUp,
   Package,
-  Heart
+  Heart,
+  Send,
+  User,
+  Building
 } from 'lucide-react';
 
 const Index = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [currentNewsSlide, setCurrentNewsSlide] = useState(0);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
 
   // محصولات ویژه - گرید ۳×۳
   const featuredProducts = [
@@ -167,6 +176,26 @@ const Index = () => {
 
   const goToNextNews = () => {
     setCurrentNewsSlide((prev) => (prev + 1) % latestNews.length);
+  };
+
+  // مدیریت فرم تماس سریع
+  const handleContactFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleContactFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Contact form submitted:', contactForm);
+    alert('پیام شما با موفقیت ارسال شد. در اسرع وقت با شما تماس خواهیم گرفت.');
+    setContactForm({
+      name: '',
+      email: '',
+      phone: '',
+      message: ''
+    });
   };
 
   return (
@@ -363,30 +392,93 @@ const Index = () => {
 
       {/* تماس سریع */}
       <section className="py-20 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <div className="flex items-center justify-center mb-6">
-            <Phone className="w-12 h-12 ml-4" />
-            <h2 className="text-4xl font-black">مشاوره رایگان و استعلام قیمت</h2>
-          </div>
-          <p className="text-xl text-amber-100 mb-8 leading-relaxed">
-            برای دریافت مشاوره تخصصی و قیمت دقیق محصولات همین حالا تماس بگیرید
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => setIsContactModalOpen(true)}
-              className="bg-white text-amber-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-50 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-reverse space-x-2"
-            >
-              <Phone className="w-6 h-6" />
-              <span>مشاوره رایگان</span>
-            </button>
-            <button 
-              onClick={() => window.location.href = '/contact'}
-              className="bg-white bg-opacity-10 border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center space-x-reverse space-x-2"
-            >
-              <Mail className="w-6 h-6" />
-              <span>تماس با ما</span>
-            </button>
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center mb-6">
+                <Phone className="w-12 h-12 ml-4" />
+                <h2 className="text-4xl font-black">مشاوره رایگان و استعلام قیمت</h2>
+              </div>
+              <p className="text-xl text-amber-100 mb-8 leading-relaxed">
+                برای دریافت مشاوره تخصصی و قیمت دقیق محصولات همین حالا تماس بگیرید
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="bg-white text-amber-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-50 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Phone className="w-6 h-6" />
+                  <span>مشاوره رایگان</span>
+                </button>
+                <button 
+                  onClick={() => window.location.href = '/contact'}
+                  className="bg-white bg-opacity-10 border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Mail className="w-6 h-6" />
+                  <span>تماس با ما</span>
+                </button>
+              </div>
+            </div>
+
+            {/* فرم تماس سریع */}
+            <div className="bg-white bg-opacity-10 backdrop-blur-sm p-8 rounded-2xl">
+              <h3 className="text-2xl font-black mb-6">فرم تماس سریع</h3>
+              <form onSubmit={handleContactFormSubmit} className="space-y-4">
+                <div className="relative">
+                  <User className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-300 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={contactForm.name}
+                    onChange={handleContactFormChange}
+                    className="w-full pr-10 pl-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-xl text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-white"
+                    placeholder="نام و نام خانوادگی"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-300 w-5 h-5" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={contactForm.email}
+                    onChange={handleContactFormChange}
+                    className="w-full pr-10 pl-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-xl text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-white"
+                    placeholder="ایمیل"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-300 w-5 h-5" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={contactForm.phone}
+                    onChange={handleContactFormChange}
+                    className="w-full pr-10 pl-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-xl text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-white"
+                    placeholder="شماره تماس"
+                    required
+                  />
+                </div>
+                <textarea
+                  name="message"
+                  value={contactForm.message}
+                  onChange={handleContactFormChange}
+                  rows={3}
+                  className="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-xl text-white placeholder-amber-200 focus:outline-none focus:ring-2 focus:ring-white resize-none"
+                  placeholder="پیام شما"
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  className="w-full bg-white text-amber-600 py-3 rounded-xl font-bold hover:bg-amber-50 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Send className="w-5 h-5" />
+                  <span>ارسال پیام</span>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
