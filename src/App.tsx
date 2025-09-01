@@ -22,6 +22,7 @@ import AdminUsers from './pages/admin/Users';
 import AdminSettings from './pages/admin/Settings';
 import AdminProfile from './pages/admin/Profile';
 import AdminCategories from './pages/admin/Categories';
+import AboutSettings from './pages/admin/AboutSettings';
 
 // Add/Edit pages
 import AddProduct from './pages/admin/AddProduct';
@@ -64,6 +65,7 @@ function App() {
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="/admin/about" element={<AboutSettings />} />
           
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />

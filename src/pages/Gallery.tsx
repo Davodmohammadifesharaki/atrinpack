@@ -73,6 +73,34 @@ const Gallery = () => {
       category: 'sealer',
       image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
       description: 'دستگاه پلمپر با تکنولوژی پیشرفته'
+    },
+    {
+      id: 9,
+      title: 'شیشه کریستالی لوکس',
+      category: 'bottle',
+      image: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=400&h=400&fit=crop',
+      description: 'شیشه کریستالی با کیفیت فوق‌العاده'
+    },
+    {
+      id: 10,
+      title: 'پمپ اسپری نقره‌ای',
+      category: 'pump',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
+      description: 'پمپ اسپری با پوشش نقره‌ای'
+    },
+    {
+      id: 11,
+      title: 'درپوش فلزی طلایی',
+      category: 'cap',
+      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
+      description: 'درپوش فلزی با پوشش طلایی'
+    },
+    {
+      id: 12,
+      title: 'اسانس یاس طبیعی',
+      category: 'essence',
+      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
+      description: 'اسانس طبیعی با رایحه یاس'
     }
   ];
 

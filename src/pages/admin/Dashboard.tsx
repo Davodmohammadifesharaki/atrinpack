@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import NotificationPanel from '../../components/NotificationPanel';
 import { 
@@ -9,10 +10,15 @@ import {
   TrendingUp,
   Eye,
   MessageSquare,
-  Star
+  Star,
+  Plus,
+  Settings,
+  FileText
 } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
   const stats = [
     {
       title: 'کل محصولات',
@@ -48,6 +54,51 @@ const AdminDashboard = () => {
     }
   ];
 
+  const quickActions = [
+    {
+      title: 'افزودن محصول',
+      description: 'محصول جدید اضافه کنید',
+      icon: Package,
+      color: 'blue',
+      action: () => navigate('/admin/products/add')
+    },
+    {
+      title: 'انتشار خبر',
+      description: 'خبر جدید منتشر کنید',
+      icon: Newspaper,
+      color: 'green',
+      action: () => navigate('/admin/news/add')
+    },
+    {
+      title: 'آپلود تصویر',
+      description: 'تصویر به گالری اضافه کنید',
+      icon: Image,
+      color: 'purple',
+      action: () => navigate('/admin/gallery/add')
+    },
+    {
+      title: 'مدیریت کاربران',
+      description: 'کاربران سیستم را مدیریت کنید',
+      icon: Users,
+      color: 'amber',
+      action: () => navigate('/admin/users')
+    },
+    {
+      title: 'پیام‌ها',
+      description: 'پیام‌های دریافتی را مشاهده کنید',
+      icon: MessageSquare,
+      color: 'red',
+      action: () => navigate('/admin/contact')
+    },
+    {
+      title: 'تنظیمات',
+      description: 'تنظیمات سایت را ویرایش کنید',
+      icon: Settings,
+      color: 'gray',
+      action: () => navigate('/admin/settings')
+    }
+  ];
+
   const recentActivities = [
     {
       id: 1,
@@ -75,6 +126,15 @@ const AdminDashboard = () => {
       time: '۱۵ دقیقه پیش',
       icon: MessageSquare,
       color: 'amber'
+    },
+    {
+      id: 4,
+      type: 'gallery',
+      title: 'تصویر جدید آپلود شد',
+      description: 'تصویر پمپ اسپری جدید',
+      time: '۲۰ دقیقه پیش',
+      icon: Image,
+      color: 'purple'
     }
   ];
 
@@ -115,13 +175,31 @@ const AdminDashboard = () => {
           ))}
         </div>
 
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h2 className="text-xl font-black text-gray-800 mb-6">عملیات سریع</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {quickActions.map((action, index) => (
+              <button
+                key={index}
+                onClick={action.action}
+                className={`p-6 bg-${action.color}-50 rounded-xl hover:bg-${action.color}-100 transition-all duration-300 text-center group transform hover:scale-105`}
+              >
+                <action.icon className={`w-8 h-8 text-${action.color}-600 mx-auto mb-3 group-hover:scale-110 transition-transform`} />
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{action.title}</h3>
+                <p className="text-sm text-gray-600">{action.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activities */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-black text-gray-800 mb-6">فعالیت‌های اخیر</h2>
             <div className="space-y-4">
               {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-reverse space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div key={activity.id} className="flex items-start space-x-reverse space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                   <div className={`w-10 h-10 bg-${activity.color}-100 rounded-full flex items-center justify-center flex-shrink-0`}>
                     <activity.icon className={`w-5 h-5 text-${activity.color}-600`} />
                   </div>
@@ -135,29 +213,33 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {/* System Status */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-black text-gray-800 mb-6">عملیات سریع</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-center">
-                <Package className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <span className="text-sm font-bold text-gray-800">افزودن محصول</span>
-              </button>
+            <h2 className="text-xl font-black text-gray-800 mb-6">وضعیت سیستم</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                <div className="flex items-center space-x-reverse space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="font-bold text-gray-800">سرور</span>
+                </div>
+                <span className="text-green-600 font-bold">آنلاین</span>
+              </div>
               
-              <button className="p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors text-center">
-                <Newspaper className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <span className="text-sm font-bold text-gray-800">انتشار خبر</span>
-              </button>
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                <div className="flex items-center space-x-reverse space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="font-bold text-gray-800">دیتابیس</span>
+                </div>
+                <span className="text-green-600 font-bold">متصل</span>
+              </div>
               
-              <button className="p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors text-center">
-                <Image className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                <span className="text-sm font-bold text-gray-800">آپلود تصویر</span>
-              </button>
-              
-              <button className="p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors text-center">
-                <MessageSquare className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-                <span className="text-sm font-bold text-gray-800">پیام‌ها</span>
-              </button>
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                <div className="flex items-center space-x-reverse space-x-3">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className="font-bold text-gray-800">آخرین بک‌آپ</span>
+                </div>
+                <span className="text-blue-600 font-bold">۲ ساعت پیش</span>
+              </div>
             </div>
           </div>
         </div>

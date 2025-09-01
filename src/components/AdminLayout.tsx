@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
   Home, 
   Package, 
@@ -14,7 +13,8 @@ import {
   X,
   Tags,
   MessageSquare,
-  FileText
+  FileText,
+  ArrowLeft
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -37,8 +37,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }
 
     const user = JSON.parse(userData);
-    setUserRole(user.role);
-    setUsername(user.username);
+    setUserRole(user.role || 'admin');
+    setUsername(user.username || user.fullName || 'ادمین');
   }, [navigate]);
 
   const handleLogout = () => {
@@ -136,7 +136,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className="flex h-screen bg-gray-100" dir="rtl">
       {/* Sidebar */}
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-16'} bg-white shadow-lg transition-all duration-300 overflow-hidden`}>
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-16'} bg-white shadow-lg transition-all duration-300 overflow-hidden flex-shrink-0`}>
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div className={`${isSidebarOpen ? 'block' : 'hidden'} transition-all duration-300`}>
@@ -168,11 +168,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-4 px-2">
+        <nav className="mt-4 px-2 flex-1">
           {filteredMenuItems.map((item) => (
-            <button
+            <Link
               key={item.path}
-              onClick={() => navigate(item.path)}
+              to={item.path}
               className={`w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
                 location.pathname === item.path 
                   ? 'bg-blue-500 text-white' 
@@ -183,12 +183,22 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <span className={`${isSidebarOpen ? 'block' : 'hidden'} transition-all duration-300`}>
                 {item.label}
               </span>
-            </button>
+            </Link>
           ))}
         </nav>
 
-        {/* Logout Button */}
-        <div className="absolute bottom-4 left-2 right-2">
+        {/* Back to Site & Logout */}
+        <div className="p-2 border-t border-gray-200">
+          <Link
+            to="/"
+            className="w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors mb-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className={`${isSidebarOpen ? 'block' : 'hidden'} transition-all duration-300`}>
+              بازگشت به سایت
+            </span>
+          </Link>
+          
           <button
             onClick={handleLogout}
             className="w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
