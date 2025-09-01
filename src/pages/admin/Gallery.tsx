@@ -13,7 +13,8 @@ import {
   List,
   Tag,
   Calendar,
-  Download
+  Download,
+  Package
 } from 'lucide-react';
 
 const AdminGallery = () => {
