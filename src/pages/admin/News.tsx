@@ -13,7 +13,8 @@ import {
   Tag,
   Star,
   Grid,
-  List
+  List,
+  TrendingUp
 } from 'lucide-react';
 
 const AdminNews = () => {
