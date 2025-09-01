@@ -17,20 +17,16 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/Products';
 import AdminNews from './pages/admin/News';
 import AdminGallery from './pages/admin/Gallery';
-import AdminCategories from './pages/admin/Categories';
 import AdminContact from './pages/admin/Contact';
-import AdminAboutSettings from './pages/admin/AboutSettings';
 import AdminUsers from './pages/admin/Users';
 import AdminSettings from './pages/admin/Settings';
 import AdminProfile from './pages/admin/Profile';
 
-// New dedicated add/edit pages
+// Add/Edit pages
 import AddProduct from './pages/admin/AddProduct';
 import EditProduct from './pages/admin/EditProduct';
 import AddNews from './pages/admin/AddNews';
 import EditNews from './pages/admin/EditNews';
-import AddGallery from './pages/admin/AddGallery';
-import EditGallery from './pages/admin/EditGallery';
 
 function App() {
   return (
@@ -58,11 +54,7 @@ function App() {
           <Route path="/admin/news/add" element={<AddNews />} />
           <Route path="/admin/news/edit/:id" element={<EditNews />} />
           <Route path="/admin/gallery" element={<AdminGallery />} />
-          <Route path="/admin/gallery/add" element={<AddGallery />} />
-          <Route path="/admin/gallery/edit/:id" element={<EditGallery />} />
-          <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/contact" element={<AdminContact />} />
-          <Route path="/admin/about" element={<AdminAboutSettings />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
