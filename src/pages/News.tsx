@@ -21,7 +21,7 @@ const News = () => {
     { id: 'technology', name: 'فناوری' }
   ];
 
-  const news = [
+  const newsData = [
     {
       id: 1,
       title: 'راه‌اندازی خط تولید جدید شیشه‌های کریستالی',
@@ -65,8 +65,11 @@ const News = () => {
       date: '۲۵ آذر ۱۴۰۳',
       category: 'اخبار تولید',
       excerpt: 'آترین پک قرارداد همکاری با یکی از برندهای معتبر فرانسوی در زمینه تولید بسته‌بندی لوکس امضا کرد.',
+      readTime: '۵ دقیقه مطالعه'
+    }
+  ];
 
-  const filteredNews = news.filter(item => {
+  const filteredNews = newsData.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.excerpt && item.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || 
@@ -150,7 +153,7 @@ const News = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-reverse space-x-2 text-gray-500">
                   <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-bold">{new Date(filteredNews[0].date).toLocaleDateString('fa-IR')}</span>
+                  <span className="text-sm font-bold">{filteredNews[0].date}</span>
                   <span className="text-sm">•</span>
                   <span className="text-sm">{filteredNews[0].category}</span>
                 </div>
@@ -179,7 +182,7 @@ const News = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-gray-800">همه اخبار</h2>
               <p className="text-gray-600">
-                نمایش {filteredNews.length} خبر از {news.length} خبر
+                نمایش {filteredNews.length} خبر از {newsData.length} خبر
               </p>
             </div>
           </div>
