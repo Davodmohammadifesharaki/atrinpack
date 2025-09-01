@@ -100,7 +100,7 @@ const Products = () => {
   };
 
   // محصولات نمونه
-  const allProducts = [
+  const sampleProducts = [
     {
       id: 1,
       name: 'بطری عطر کریستالی 50ml',
@@ -187,8 +187,13 @@ const Products = () => {
       volume: '25ml',
       color: 'gold',
       material: 'crystal',
+      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت'
+    }
+  ];
+
   // فیلتر کردن محصولات
-  const filteredProducts = allProducts.filter(product => {
+  const filteredProducts = (allProducts || sampleProducts).filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedFilters.category === 'all' || product.category.includes(selectedFilters.category);
     const matchesUsage = selectedFilters.usage === 'all' || product.usage === selectedFilters.usage;
@@ -383,7 +388,7 @@ const Products = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-8 bg-white p-6 rounded-2xl shadow-lg">
               <div className="flex items-center gap-4">
                 <span className="text-gray-600">
-                  نمایش {filteredProducts.length} محصول از {allProducts.length} محصول
+                  نمایش {filteredProducts.length} محصول از {(allProducts || sampleProducts).length} محصول
                 </span>
               </div>
 
