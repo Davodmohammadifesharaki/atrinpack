@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,5 +82,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+    font-weight: 700;
+    direction: rtl;
   }
 }
