@@ -10,7 +10,9 @@ import {
   Facebook,
   Linkedin,
   Save,
-  Edit
+  Edit,
+  Eye,
+  Trash2
 } from 'lucide-react';
 
 const AdminContact = () => {
