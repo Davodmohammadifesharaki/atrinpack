@@ -317,13 +317,6 @@ const AdminGallery = () => {
       </div>
     </AdminLayout>
   );
-
-  function handleDeleteImage(id: number) {
-    if (confirm('آیا از حذف این تصویر اطمینان دارید؟')) {
-      console.log('Image deleted:', id);
-      alert('تصویر با موفقیت حذف شد!');
-    }
-  }
 };
 
 export default AdminGallery;
