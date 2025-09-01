@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContactModal from '../components/ContactModal';
+import { contactOperations } from '../hooks/useSupabase';
 import { 
   Phone, 
   Mail, 
@@ -36,16 +37,37 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('پیام شما با موفقیت ارسال شد. در اسرع وقت با شما تماس خواهیم گرفت.');
-    setFormData({
-      name: '',
-      company: '',
-      phone: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    
+    const submitMessage = async () => {
+      try {
+        const { error } = await contactOperations.create({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          subject: formData.subject,
+          message: formData.message,
+          status: 'new'
+        });
+
+        if (error) throw error;
+
+        alert('پیام شما با موفقیت ارسال شد. در اسرع وقت با شما تماس خواهیم گرفت.');
+        setFormData({
+          name: '',
+          company: '',
+          phone: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+      } catch (error) {
+        console.error('Error submitting contact form:', error);
+        alert('خطا در ارسال پیام. لطفاً مجدداً تلاش کنید.');
+      }
+    };
+
+    submitMessage();
   };
 
   // اطلاعات تماس (قابل تنظیم توسط ادمین)

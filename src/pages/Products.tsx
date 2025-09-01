@@ -3,9 +3,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import ContactModal from '../components/ContactModal';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { useProducts } from '../hooks/useSupabase';
 import { Search, Filter, Grid, List, X } from 'lucide-react';
 
 const Products = () => {
+  const { products: allProducts, loading, error, refetch } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     category: 'all',
@@ -183,29 +187,10 @@ const Products = () => {
       volume: '25ml',
       color: 'gold',
       material: 'crystal',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true
-    },
-    {
-      id: 8,
-      name: 'دستگاه پلمپر اتوماتیک',
-      category: 'sealer',
-      usage: 'devices',
-      shape: 'cube',
-      volume: 'all',
-      color: 'black',
-      material: 'metal',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    }
-  ];
-
   // فیلتر کردن محصولات
   const filteredProducts = allProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedFilters.category === 'all' || product.category === selectedFilters.category;
+    const matchesCategory = selectedFilters.category === 'all' || product.category.includes(selectedFilters.category);
     const matchesUsage = selectedFilters.usage === 'all' || product.usage === selectedFilters.usage;
     const matchesShape = selectedFilters.shape === 'all' || product.shape === selectedFilters.shape;
     const matchesVolume = selectedFilters.volume === 'all' || product.volume === selectedFilters.volume;
@@ -251,6 +236,16 @@ const Products = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* فیلترهای عمودی (سایدبار راست) */}
+          {loading ? (
+            <div className="lg:col-span-4">
+              <LoadingSpinner message="در حال بارگذاری محصولات..." />
+            </div>
+          ) : error ? (
+            <div className="lg:col-span-4">
+              <ErrorMessage message={error} onRetry={refetch} />
+            </div>
+          ) : (
+            <>
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-2xl shadow-lg sticky top-24">
               <div className="flex items-center justify-between mb-6">
@@ -457,6 +452,8 @@ const Products = () => {
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import NewsCard from '../components/NewsCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { useNews } from '../hooks/useSupabase';
 import { Search, Filter, Calendar } from 'lucide-react';
 
 const News = () => {
+  const { news, loading, error, refetch } = useNews();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -61,22 +65,10 @@ const News = () => {
       date: '۲۵ آذر ۱۴۰۳',
       category: 'اخبار تولید',
       excerpt: 'آترین پک قرارداد همکاری با یکی از برندهای معتبر فرانسوی در زمینه تولید بسته‌بندی لوکس امضا کرد.',
-      readTime: '۵ دقیقه مطالعه'
-    },
-    {
-      id: 6,
-      title: 'بکارگیری فناوری جدید در خط تولید',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
-      date: '۲۰ آذر ۱۴۰۳',
-      category: 'فناوری',
-      excerpt: 'استفاده از جدیدترین تکنولوژی‌های تولید برای بهبود کیفیت و کاهش زمان تولید محصولات.',
-      readTime: '۴ دقیقه مطالعه'
-    }
-  ];
 
   const filteredNews = news.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+                         (item.excerpt && item.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || 
                            item.category === categories.find(cat => cat.id === selectedCategory)?.name;
     return matchesSearch && matchesCategory;
@@ -132,7 +124,11 @@ const News = () => {
       </section>
 
       {/* Featured News */}
-      {filteredNews.length > 0 && (
+      {loading ? (
+        <LoadingSpinner message="در حال بارگذاری اخبار..." />
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={refetch} />
+      ) : filteredNews.length > 0 && (
         <section className="py-12 bg-white">
           <div className="container mx-auto px-6">
             <div className="mb-8">
@@ -154,7 +150,7 @@ const News = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-reverse space-x-2 text-gray-500">
                   <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-bold">{filteredNews[0].date}</span>
+                  <span className="text-sm font-bold">{new Date(filteredNews[0].date).toLocaleDateString('fa-IR')}</span>
                   <span className="text-sm">•</span>
                   <span className="text-sm">{filteredNews[0].category}</span>
                 </div>

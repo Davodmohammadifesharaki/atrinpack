@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { useGallery } from '../hooks/useSupabase';
 import { Image, Camera, Filter, Grid, List, Eye, X } from 'lucide-react';
 
 const Gallery = () => {
+  const { gallery: galleryItems, loading, error, refetch } = useGallery();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedImage, setSelectedImage] = useState<any>(null);
@@ -93,16 +97,6 @@ const Gallery = () => {
       title: 'درپوش فلزی طلایی',
       category: 'cap',
       image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
-      description: 'درپوش فلزی با پوشش طلایی'
-    },
-    {
-      id: 12,
-      title: 'اسانس یاس طبیعی',
-      category: 'essence',
-      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
-      description: 'اسانس طبیعی با رایحه یاس'
-    }
-  ];
 
   const filteredItems = galleryItems.filter(item => 
     selectedCategory === 'all' || item.category === selectedCategory
@@ -171,6 +165,12 @@ const Gallery = () => {
       {/* Gallery Grid */}
       <section className="py-12">
         <div className="container mx-auto px-6">
+          {loading ? (
+            <LoadingSpinner message="در حال بارگذاری گالری..." />
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={refetch} />
+          ) : (
+            <>
           <div className="mb-8">
             <p className="text-gray-600">
               نمایش {filteredItems.length} تصویر از {galleryItems.length} تصویر
@@ -217,6 +217,8 @@ const Gallery = () => {
               <h3 className="text-xl font-bold text-gray-600 mb-2">تصویری یافت نشد</h3>
               <p className="text-gray-500">لطفاً دسته‌بندی دیگری انتخاب کنید</p>
             </div>
+          )}
+            </>
           )}
         </div>
       </section>
