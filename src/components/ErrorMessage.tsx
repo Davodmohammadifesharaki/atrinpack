@@ -26,4 +26,3 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {
 };
 
 export default ErrorMessage;
-</boltMessage>

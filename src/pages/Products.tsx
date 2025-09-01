@@ -99,101 +99,8 @@ const Products = () => {
     ]
   };
 
-  // محصولات نمونه
-  const sampleProducts = [
-    {
-      id: 1,
-      name: 'بطری عطر کریستالی 50ml',
-      category: 'bottle',
-      usage: 'perfume',
-      shape: 'square',
-      volume: '50ml',
-      color: 'clear',
-      material: 'crystal',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true,
-      isFeatured: true
-    },
-    {
-      id: 2,
-      name: 'پمپ اسپری طلایی',
-      category: 'pump',
-      usage: 'perfume',
-      shape: 'cylinder',
-      volume: '30ml',
-      color: 'gold',
-      material: 'metal',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 3,
-      name: 'درپوش هنری نقره‌ای',
-      category: 'cap',
-      usage: 'perfume',
-      shape: 'circle',
-      volume: 'all',
-      color: 'silver',
-      material: 'metal',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true
-    },
-    {
-      id: 4,
-      name: 'اسانس گل رز طبیعی',
-      category: 'essence',
-      usage: 'essence',
-      shape: 'drop',
-      volume: '25ml',
-      color: 'pink',
-      material: 'glass',
-      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 5,
-      name: 'بطری شیشه‌ای 100ml',
-      category: 'bottle',
-      usage: 'skincare',
-      shape: 'cylinder',
-      volume: '100ml',
-      color: 'blue',
-      material: 'glass',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت'
-    },
-    {
-      id: 6,
-      name: 'پمپ اسپری نقره‌ای',
-      category: 'pump',
-      usage: 'perfume',
-      shape: 'cylinder',
-      volume: '50ml',
-      color: 'silver',
-      material: 'metal',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت'
-    },
-    {
-      id: 7,
-      name: 'شیشه مثلثی لوکس 25ml',
-      category: 'bottle',
-      usage: 'perfume',
-      shape: 'triangle',
-      volume: '25ml',
-      color: 'gold',
-      material: 'crystal',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت'
-    }
-  ];
-
   // فیلتر کردن محصولات
-  const filteredProducts = (allProducts || sampleProducts).filter(product => {
+  const filteredProducts = (allProducts || []).filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedFilters.category === 'all' || product.category.includes(selectedFilters.category);
     const matchesUsage = selectedFilters.usage === 'all' || product.usage === selectedFilters.usage;
@@ -388,7 +295,7 @@ const Products = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-8 bg-white p-6 rounded-2xl shadow-lg">
               <div className="flex items-center gap-4">
                 <span className="text-gray-600">
-                  نمایش {filteredProducts.length} محصول از {(allProducts || sampleProducts).length} محصول
+                  نمایش {filteredProducts.length} محصول از {(allProducts || []).length} محصول
                 </span>
               </div>
 

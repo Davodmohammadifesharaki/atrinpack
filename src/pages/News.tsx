@@ -21,55 +21,7 @@ const News = () => {
     { id: 'technology', name: 'فناوری' }
   ];
 
-  const newsData = [
-    {
-      id: 1,
-      title: 'راه‌اندازی خط تولید جدید شیشه‌های کریستالی',
-      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-      date: '۱۵ دی ۱۴۰۳',
-      category: 'اخبار تولید',
-      excerpt: 'آترین پک با راه‌اندازی خط تولید جدید، ظرفیت تولید شیشه‌های کریستالی را دو برابر کرده است.',
-      readTime: '۳ دقیقه مطالعه'
-    },
-    {
-      id: 2,
-      title: 'دریافت گواهینامه ISO 9001:2015',
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
-      date: '۱۰ دی ۱۴۰۳',
-      category: 'گواهینامه‌ها',
-      excerpt: 'شرکت آترین پک موفق به دریافت گواهینامه بین‌المللی کیفیت ISO 9001:2015 شده است.',
-      readTime: '۲ دقیقه مطالعه'
-    },
-    {
-      id: 3,
-      title: 'حضور در نمایشگاه بین‌المللی بسته‌بندی',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop',
-      date: '۵ دی ۱۴۰۳',
-      category: 'نمایشگاه‌ها',
-      excerpt: 'آترین پک در نمایشگاه بین‌المللی بسته‌بندی تهران حضور یافت و محصولات جدید خود را معرفی کرد.',
-      readTime: '۴ دقیقه مطالعه'
-    },
-    {
-      id: 4,
-      title: 'معرفی سری جدید پمپ‌های اسپری طلایی',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=300&fit=crop',
-      date: '۱ دی ۱۴۰۳',
-      category: 'محصولات جدید',
-      excerpt: 'مجموعه جدید پمپ‌های اسپری با پوشش طلایی و کیفیت بالا به بازار عرضه شد.',
-      readTime: '۳ دقیقه مطالعه'
-    },
-    {
-      id: 5,
-      title: 'همکاری با برند معتبر فرانسوی',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop',
-      date: '۲۵ آذر ۱۴۰۳',
-      category: 'اخبار تولید',
-      excerpt: 'آترین پک قرارداد همکاری با یکی از برندهای معتبر فرانسوی در زمینه تولید بسته‌بندی لوکس امضا کرد.',
-      readTime: '۵ دقیقه مطالعه'
-    }
-  ];
-
-  const filteredNews = newsData.filter(item => {
+  const filteredNews = (news || []).filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.excerpt && item.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || 
@@ -182,7 +134,7 @@ const News = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-gray-800">همه اخبار</h2>
               <p className="text-gray-600">
-                نمایش {filteredNews.length} خبر از {newsData.length} خبر
+                نمایش {filteredNews.length} خبر از {(news || []).length} خبر
               </p>
             </div>
           </div>
