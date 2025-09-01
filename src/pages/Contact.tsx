@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ContactModal from '../components/ContactModal';
 import { 
   Phone, 
   Mail, 
@@ -9,7 +10,10 @@ import {
   MessageCircle,
   Send,
   User,
-  Building
+  Building,
+  Instagram,
+  Facebook,
+  Linkedin
 } from 'lucide-react';
 
 const Contact = () => {
@@ -21,6 +25,7 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -41,6 +46,24 @@ const Contact = () => {
       subject: '',
       message: ''
     });
+  };
+
+  // اطلاعات تماس (قابل تنظیم توسط ادمین)
+  const contactInfo = {
+    phones: ['021-12345678', '09123456789'],
+    emails: ['info@atrinpack.com', 'sales@atrinpack.com'],
+    address: 'تهران، خیابان کریمخان، پلاک 123',
+    workingHours: {
+      weekdays: 'شنبه تا پنج‌شنبه: 8:00 - 18:00',
+      friday: 'جمعه: تعطیل'
+    },
+    socialMedia: {
+      whatsapp: 'https://wa.me/989123456789',
+      instagram: 'https://instagram.com/atrinpack',
+      facebook: 'https://facebook.com/atrinpack',
+      linkedin: 'https://linkedin.com/company/atrinpack'
+    },
+    mapLocation: 'https://maps.google.com/?q=35.6892,51.3890'
   };
 
   return (
@@ -71,8 +94,11 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800 mb-1">تلفن تماس</h3>
-                    <p className="text-gray-600">021-12345678</p>
-                    <p className="text-gray-600">09123456789</p>
+                    {contactInfo.phones.map((phone, index) => (
+                      <p key={index} className="text-gray-600">
+                        <a href={`tel:${phone}`} className="hover:text-blue-600">{phone}</a>
+                      </p>
+                    ))}
                   </div>
                 </div>
 
@@ -82,8 +108,11 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800 mb-1">ایمیل</h3>
-                    <p className="text-gray-600">info@atrinpack.com</p>
-                    <p className="text-gray-600">sales@atrinpack.com</p>
+                    {contactInfo.emails.map((email, index) => (
+                      <p key={index} className="text-gray-600">
+                        <a href={`mailto:${email}`} className="hover:text-green-600">{email}</a>
+                      </p>
+                    ))}
                   </div>
                 </div>
 
@@ -93,7 +122,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800 mb-1">آدرس</h3>
-                    <p className="text-gray-600">تهران، خیابان کریمخان، پلاک 123</p>
+                    <p className="text-gray-600">{contactInfo.address}</p>
                   </div>
                 </div>
 
@@ -103,36 +132,64 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800 mb-1">ساعات کاری</h3>
-                    <p className="text-gray-600">شنبه تا پنج‌شنبه: 8:00 - 18:00</p>
-                    <p className="text-gray-600">جمعه: تعطیل</p>
+                    <p className="text-gray-600">{contactInfo.workingHours.weekdays}</p>
+                    <p className="text-gray-600">{contactInfo.workingHours.friday}</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Social Media */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <h4 className="text-lg font-bold text-gray-800 mb-4">شبکه‌های اجتماعی</h4>
+                <div className="flex space-x-reverse space-x-4">
+                  <a 
+                    href={contactInfo.socialMedia.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                  >
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </a>
+                  <a 
+                    href={contactInfo.socialMedia.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                  >
+                    <Instagram className="w-6 h-6 text-white" />
+                  </a>
+                  <a 
+                    href={contactInfo.socialMedia.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                  >
+                    <Facebook className="w-6 h-6 text-white" />
+                  </a>
+                  <a 
+                    href={contactInfo.socialMedia.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                  >
+                    <Linkedin className="w-6 h-6 text-white" />
+                  </a>
                 </div>
               </div>
             </div>
 
-            {/* Quick Contact */}
+            {/* دکمه مشاوره رایگان */}
             <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-8 rounded-2xl text-white">
-              <h3 className="text-xl font-black mb-4">تماس فوری</h3>
+              <h3 className="text-xl font-black mb-4">مشاوره رایگان</h3>
               <p className="mb-6 text-amber-100">برای مشاوره رایگان و استعلام قیمت</p>
               
-              <div className="space-y-3">
-                <a 
-                  href="tel:+989123456789"
-                  className="flex items-center space-x-reverse space-x-3 bg-white bg-opacity-20 p-3 rounded-xl hover:bg-opacity-30 transition-all duration-300"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>09123456789</span>
-                </a>
-                <a 
-                  href="https://wa.me/989123456789"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-reverse space-x-3 bg-white bg-opacity-20 p-3 rounded-xl hover:bg-opacity-30 transition-all duration-300"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  <span>واتساپ</span>
-                </a>
-              </div>
+              <button 
+                onClick={() => setIsContactModalOpen(true)}
+                className="w-full bg-white text-amber-600 py-3 rounded-xl font-bold hover:bg-amber-50 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+              >
+                <Phone className="w-5 h-5" />
+                <span>مشاوره رایگان</span>
+              </button>
             </div>
           </div>
 
@@ -265,15 +322,24 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Map Section */}
+        {/* نقشه تعاملی */}
         <div className="mt-16">
           <div className="bg-white p-8 rounded-2xl shadow-lg">
             <h2 className="text-2xl font-black text-gray-800 mb-6">موقعیت ما روی نقشه</h2>
-            <div className="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center">
+            <div className="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center relative overflow-hidden">
               <div className="text-center text-gray-500">
                 <MapPin className="w-16 h-16 mx-auto mb-4" />
-                <p className="text-lg font-bold">نقشه در اینجا نمایش داده می‌شود</p>
-                <p className="text-sm">تهران، خیابان کریمخان، پلاک 123</p>
+                <p className="text-lg font-bold">نقشه تعاملی</p>
+                <p className="text-sm mb-4">{contactInfo.address}</p>
+                <a
+                  href={contactInfo.mapLocation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 inline-flex items-center space-x-reverse space-x-2"
+                >
+                  <MapPin className="w-5 h-5" />
+                  <span>مشاهده در نقشه</span>
+                </a>
               </div>
             </div>
           </div>
@@ -281,6 +347,11 @@ const Contact = () => {
       </div>
 
       <Footer />
+      
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 };

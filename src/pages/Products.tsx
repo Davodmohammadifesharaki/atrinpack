@@ -1,28 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import ContactModal from '../components/ContactModal';
+import { Search, Filter, Grid, List, X } from 'lucide-react';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedFilters, setSelectedFilters] = useState({
+    category: 'all',
+    usage: 'all',
+    shape: 'all',
+    volume: 'all',
+    color: 'all',
+    material: 'all'
+  });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
-  const categories = [
-    { id: 'all', name: 'همه محصولات' },
-    { id: 'perfume', name: 'شیشه و بطری' },
-    { id: 'pump', name: 'پمپ و اسپری' },
-    { id: 'cap', name: 'درپوش' },
-    { id: 'essence', name: 'اسانس' },
-    { id: 'sealer', name: 'پلمپر' }
-  ];
+  // دسته‌بندی‌ها و فیلترها
+  const filterOptions = {
+    categories: [
+      { id: 'all', name: 'همه محصولات' },
+      { id: 'bottle', name: 'شیشه و بطری' },
+      { id: 'pump', name: 'پمپ و اسپری' },
+      { id: 'cap', name: 'درپوش' },
+      { id: 'essence', name: 'اسانس' },
+      { id: 'sealer', name: 'پلمپر' }
+    ],
+    usages: [
+      { id: 'all', name: 'همه کاربردها' },
+      { id: 'perfume', name: 'عطر' },
+      { id: 'skincare', name: 'مراقبت پوست' },
+      { id: 'devices', name: 'دستگاه‌ها' },
+      { id: 'essence', name: 'اسانس و رایحه‌ها' }
+    ],
+    shapes: [
+      { id: 'all', name: 'همه اشکال' },
+      { id: 'square', name: 'مربع' },
+      { id: 'circle', name: 'دایره' },
+      { id: 'oval', name: 'بیضی' },
+      { id: 'cylinder', name: 'استوانه' },
+      { id: 'triangle', name: 'مثلث' },
+      { id: 'drop', name: 'قطره' },
+      { id: 'cube', name: 'مکعب' },
+      { id: 'diamond', name: 'لوزی' },
+      { id: 'heart', name: 'قلب' },
+      { id: 'star', name: 'ستاره' },
+      { id: 'custom', name: 'سفارشی' }
+    ],
+    volumes: [
+      { id: 'all', name: 'همه حجم‌ها' },
+      { id: '18ml', name: '۱۸ میلی‌لیتر' },
+      { id: '25ml', name: '۲۵ میلی‌لیتر' },
+      { id: '30ml', name: '۳۰ میلی‌لیتر' },
+      { id: '40ml', name: '۴۰ میلی‌لیتر' },
+      { id: '50ml', name: '۵۰ میلی‌لیتر' },
+      { id: '60ml', name: '۶۰ میلی‌لیتر' },
+      { id: '75ml', name: '۷۵ میلی‌لیتر' },
+      { id: '100ml', name: '۱۰۰ میلی‌لیتر' },
+      { id: '200ml', name: '۲۰۰ میلی‌لیتر' },
+      { id: '500ml', name: '۵۰۰ میلی‌لیتر' }
+    ],
+    colors: [
+      { id: 'all', name: 'همه رنگ‌ها' },
+      { id: 'clear', name: 'شفاف' },
+      { id: 'crystal', name: 'کریستالی' },
+      { id: 'black', name: 'مشکی' },
+      { id: 'white', name: 'سفید' },
+      { id: 'gold', name: 'طلایی' },
+      { id: 'silver', name: 'نقره‌ای' },
+      { id: 'blue', name: 'آبی' },
+      { id: 'green', name: 'سبز' },
+      { id: 'red', name: 'قرمز' },
+      { id: 'pink', name: 'صورتی' },
+      { id: 'purple', name: 'بنفش' },
+      { id: 'yellow', name: 'زرد' },
+      { id: 'brown', name: 'قهوه‌ای' },
+      { id: 'orange', name: 'نارنجی' },
+      { id: 'gray', name: 'خاکستری' }
+    ],
+    materials: [
+      { id: 'all', name: 'همه جنس‌ها' },
+      { id: 'glass', name: 'شیشه' },
+      { id: 'crystal', name: 'کریستال' },
+      { id: 'pet', name: 'پلاستیک PET' },
+      { id: 'acrylic', name: 'آکریلیک' },
+      { id: 'wood', name: 'چوب' },
+      { id: 'metal', name: 'فلز' },
+      { id: 'ceramic', name: 'سرامیک' },
+      { id: 'bamboo', name: 'بامبو' },
+      { id: 'stone', name: 'سنگ' },
+      { id: 'composite', name: 'کامپوزیت' }
+    ]
+  };
 
-  const products = [
+  // محصولات نمونه
+  const allProducts = [
     {
       id: 1,
       name: 'بطری عطر کریستالی 50ml',
-      category: 'شیشه و بطری',
+      category: 'bottle',
+      usage: 'perfume',
+      shape: 'square',
+      volume: '50ml',
+      color: 'clear',
+      material: 'crystal',
       image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
       price: 'استعلام قیمت',
       isNew: true,
@@ -31,7 +114,12 @@ const Products = () => {
     {
       id: 2,
       name: 'پمپ اسپری طلایی',
-      category: 'پمپ و اسپری',
+      category: 'pump',
+      usage: 'perfume',
+      shape: 'cylinder',
+      volume: '30ml',
+      color: 'gold',
+      material: 'metal',
       image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
       price: 'استعلام قیمت',
       isFeatured: true
@@ -39,7 +127,12 @@ const Products = () => {
     {
       id: 3,
       name: 'درپوش هنری نقره‌ای',
-      category: 'درپوش',
+      category: 'cap',
+      usage: 'perfume',
+      shape: 'circle',
+      volume: 'all',
+      color: 'silver',
+      material: 'metal',
       image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',
       price: 'استعلام قیمت',
       isNew: true
@@ -47,7 +140,12 @@ const Products = () => {
     {
       id: 4,
       name: 'اسانس گل رز طبیعی',
-      category: 'اسانس',
+      category: 'essence',
+      usage: 'essence',
+      shape: 'drop',
+      volume: '25ml',
+      color: 'pink',
+      material: 'glass',
       image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
       price: 'استعلام قیمت',
       isFeatured: true
@@ -55,24 +153,86 @@ const Products = () => {
     {
       id: 5,
       name: 'بطری شیشه‌ای 100ml',
-      category: 'شیشه و بطری',
+      category: 'bottle',
+      usage: 'skincare',
+      shape: 'cylinder',
+      volume: '100ml',
+      color: 'blue',
+      material: 'glass',
       image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=400&fit=crop',
       price: 'استعلام قیمت'
     },
     {
       id: 6,
       name: 'پمپ اسپری نقره‌ای',
-      category: 'پمپ و اسپری',
+      category: 'pump',
+      usage: 'perfume',
+      shape: 'cylinder',
+      volume: '50ml',
+      color: 'silver',
+      material: 'metal',
       image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
       price: 'استعلام قیمت'
+    },
+    {
+      id: 7,
+      name: 'شیشه مثلثی لوکس 25ml',
+      category: 'bottle',
+      usage: 'perfume',
+      shape: 'triangle',
+      volume: '25ml',
+      color: 'gold',
+      material: 'crystal',
+      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
+      isNew: true
+    },
+    {
+      id: 8,
+      name: 'دستگاه پلمپر اتوماتیک',
+      category: 'sealer',
+      usage: 'devices',
+      shape: 'cube',
+      volume: 'all',
+      color: 'black',
+      material: 'metal',
+      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
+      price: 'استعلام قیمت',
+      isFeatured: true
     }
   ];
 
-  const filteredProducts = products.filter(product => {
+  // فیلتر کردن محصولات
+  const filteredProducts = allProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === categories.find(cat => cat.id === selectedCategory)?.name;
-    return matchesSearch && matchesCategory;
+    const matchesCategory = selectedFilters.category === 'all' || product.category === selectedFilters.category;
+    const matchesUsage = selectedFilters.usage === 'all' || product.usage === selectedFilters.usage;
+    const matchesShape = selectedFilters.shape === 'all' || product.shape === selectedFilters.shape;
+    const matchesVolume = selectedFilters.volume === 'all' || product.volume === selectedFilters.volume;
+    const matchesColor = selectedFilters.color === 'all' || product.color === selectedFilters.color;
+    const matchesMaterial = selectedFilters.material === 'all' || product.material === selectedFilters.material;
+    
+    return matchesSearch && matchesCategory && matchesUsage && matchesShape && matchesVolume && matchesColor && matchesMaterial;
   });
+
+  const handleFilterChange = (filterType: string, value: string) => {
+    setSelectedFilters({
+      ...selectedFilters,
+      [filterType]: value
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedFilters({
+      category: 'all',
+      usage: 'all',
+      shape: 'all',
+      volume: 'all',
+      color: 'all',
+      material: 'all'
+    });
+    setSearchTerm('');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -88,93 +248,224 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="py-8 bg-white border-b">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="جستجو در محصولات..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex items-center gap-4">
-              <Filter className="w-5 h-5 text-gray-600" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* View Mode */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
-                }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
-                }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Products Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-6">
-          <div className="mb-8">
-            <p className="text-gray-600">
-              نمایش {filteredProducts.length} محصول از {products.length} محصول
-            </p>
-          </div>
-
-          <div className={`grid gap-8 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-              : 'grid-cols-1'
-          }`}>
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-gray-400 mb-4">
-                <Search className="w-16 h-16 mx-auto" />
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* فیلترهای عمودی (سایدبار راست) */}
+          <div className="lg:col-span-1">
+            <div className="bg-white p-6 rounded-2xl shadow-lg sticky top-24">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-black text-gray-800 flex items-center">
+                  <Filter className="w-6 h-6 ml-2 text-blue-500" />
+                  فیلترها
+                </h3>
+                <button
+                  onClick={clearAllFilters}
+                  className="text-sm text-red-600 hover:text-red-800 font-bold flex items-center space-x-reverse space-x-1"
+                >
+                  <X className="w-4 h-4" />
+                  <span>پاک کردن</span>
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-gray-600 mb-2">محصولی یافت نشد</h3>
-              <p className="text-gray-500">لطفاً کلمات کلیدی دیگری امتحان کنید</p>
+
+              <div className="space-y-6">
+                {/* جستجو */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">جستجو</label>
+                  <div className="relative">
+                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="جستجو در محصولات..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {/* نوع محصول */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">نوع محصول</label>
+                  <select
+                    value={selectedFilters.category}
+                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* کاربرد */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">کاربرد</label>
+                  <select
+                    value={selectedFilters.usage}
+                    onChange={(e) => handleFilterChange('usage', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.usages.map(usage => (
+                      <option key={usage.id} value={usage.id}>
+                        {usage.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* شکل شیشه */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">شکل شیشه</label>
+                  <select
+                    value={selectedFilters.shape}
+                    onChange={(e) => handleFilterChange('shape', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.shapes.map(shape => (
+                      <option key={shape.id} value={shape.id}>
+                        {shape.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* حجم */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">حجم</label>
+                  <select
+                    value={selectedFilters.volume}
+                    onChange={(e) => handleFilterChange('volume', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.volumes.map(volume => (
+                      <option key={volume.id} value={volume.id}>
+                        {volume.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* رنگ */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">رنگ</label>
+                  <select
+                    value={selectedFilters.color}
+                    onChange={(e) => handleFilterChange('color', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.colors.map(color => (
+                      <option key={color.id} value={color.id}>
+                        {color.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* جنس */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">جنس</label>
+                  <select
+                    value={selectedFilters.material}
+                    onChange={(e) => handleFilterChange('material', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {filterOptions.materials.map(material => (
+                      <option key={material.id} value={material.id}>
+                        {material.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* محصولات */}
+          <div className="lg:col-span-3">
+            {/* نوار ابزار */}
+            <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-8 bg-white p-6 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600">
+                  نمایش {filteredProducts.length} محصول از {allProducts.length} محصول
+                </span>
+              </div>
+
+              {/* View Mode */}
+              <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
+                  }`}
+                >
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
+                  }`}
+                >
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* گرید محصولات */}
+            <div className={`grid gap-8 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            }`}>
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="group">
+                  <ProductCard {...product} />
+                  {/* دکمه‌های هاور */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4 flex gap-3">
+                    <button 
+                      onClick={() => window.location.href = `/product/${product.id}`}
+                      className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                    >
+                      <span>مشاهده</span>
+                    </button>
+                    <button 
+                      onClick={() => setIsContactModalOpen(true)}
+                      className="flex-1 bg-amber-500 text-white py-2 px-4 rounded-xl font-bold hover:bg-amber-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                    >
+                      <span>استعلام قیمت</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
+                <div className="text-gray-400 mb-4">
+                  <Search className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-600 mb-2">محصولی یافت نشد</h3>
+                <p className="text-gray-500 mb-4">لطفاً فیلترها را تغییر دهید یا کلمات کلیدی دیگری امتحان کنید</p>
+                <button
+                  onClick={clearAllFilters}
+                  className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300"
+                >
+                  پاک کردن فیلترها
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </section>
+      </div>
 
       <Footer />
+      
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 };

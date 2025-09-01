@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Crown, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { Crown, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ const AdminLogin = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -19,23 +20,31 @@ const AdminLogin = () => {
     setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // نمونه احراز هویت ساده
-    const users = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'editor', password: 'editor123', role: 'editor' },
-      { username: 'viewer', password: 'viewer123', role: 'viewer' }
-    ];
-
-    const user = users.find(u => u.username === formData.username && u.password === formData.password);
-    
-    if (user) {
-      localStorage.setItem('adminUser', JSON.stringify(user));
-      navigate('/admin/dashboard');
+    // احراز هویت با یوزرنیم و پسورد مشخص شده
+    if (formData.username === 'aminjafari' && formData.password === 'aMiNjAfArI') {
+      const adminUser = {
+        username: 'aminjafari',
+        fullName: 'امین جعفری',
+        role: 'admin',
+        email: 'admin@atrinpack.com',
+        loginTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem('adminUser', JSON.stringify(adminUser));
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate('/admin/dashboard');
+      }, 1000);
     } else {
-      setError('نام کاربری یا رمز عبور اشتباه است');
+      setTimeout(() => {
+        setIsLoading(false);
+        setError('نام کاربری یا رمز عبور اشتباه است');
+      }, 1000);
     }
   };
 
@@ -54,7 +63,7 @@ const AdminLogin = () => {
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl animate-bounce-in">
               {error}
             </div>
           )}
@@ -71,6 +80,7 @@ const AdminLogin = () => {
                 className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="نام کاربری خود را وارد کنید"
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -87,11 +97,13 @@ const AdminLogin = () => {
                 className="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="رمز عبور خود را وارد کنید"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -100,29 +112,28 @@ const AdminLogin = () => {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            ورود به پنل
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-reverse space-x-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>در حال ورود...</span>
+              </div>
+            ) : (
+              'ورود به پنل'
+            )}
           </button>
         </form>
-
-        {/* Demo Accounts */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-xl">
-          <h3 className="text-sm font-bold text-gray-700 mb-3">حساب‌های نمونه:</h3>
-          <div className="space-y-2 text-xs text-gray-600">
-            <div>مدیر کل: admin / admin123</div>
-            <div>ویرایشگر: editor / editor123</div>
-            <div>نمایشگر: viewer / viewer123</div>
-          </div>
-        </div>
 
         {/* Back to Site */}
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate('/')}
-            className="text-amber-600 hover:text-amber-800 font-bold transition-colors"
+            className="text-amber-600 hover:text-amber-800 font-bold transition-colors flex items-center justify-center space-x-reverse space-x-2 mx-auto"
           >
-            بازگشت به سایت
+            <ArrowRight className="w-4 h-4" />
+            <span>بازگشت به سایت</span>
           </button>
         </div>
       </div>

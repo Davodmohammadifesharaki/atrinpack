@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { 
@@ -9,10 +9,15 @@ import {
   Target,
   Heart,
   Lightbulb,
-  TrendingUp
+  TrendingUp,
+  Download,
+  Eye,
+  FileText
 } from 'lucide-react';
 
 const About = () => {
+  const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <Header />
@@ -133,29 +138,74 @@ const About = () => {
         </div>
       </section>
 
-      {/* Achievements */}
+      {/* بخش کاتالوگ */}
       <section className="py-20 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
         <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-black mb-6">کاتالوگ محصولات ۲۰۲۴</h2>
+              <p className="text-xl text-amber-100 mb-8 leading-relaxed">
+                مجموعه کاملی از تمام محصولات آترین پک با جزئیات فنی، تصاویر باکیفیت و اطلاعات قیمت
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => {
+                    // دانلود PDF کاتالوگ
+                    const link = document.createElement('a');
+                    link.href = '/catalog-atrinpack-2024.pdf';
+                    link.download = 'catalog-atrinpack-2024.pdf';
+                    link.click();
+                  }}
+                  className="bg-white text-amber-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-50 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Download className="w-6 h-6" />
+                  <span>دانلود کاتالوگ PDF</span>
+                </button>
+                <button 
+                  onClick={() => setIsCatalogModalOpen(true)}
+                  className="bg-white bg-opacity-10 border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Eye className="w-6 h-6" />
+                  <span>مشاهده آنلاین</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <img 
+                src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=500&fit=crop"
+                alt="کاتالوگ آترین پک"
+                className="w-80 h-96 object-cover rounded-2xl shadow-2xl mx-auto transform hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Achievements */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-black mb-4">دستاوردهای ما</h2>
-            <p className="text-xl text-amber-100">نتایج تلاش‌های مستمر تیم آترین پک</p>
+            <h2 className="text-3xl font-black text-gray-800 mb-4">دستاوردهای ما</h2>
+            <p className="text-xl text-gray-600">نتایج تلاش‌های مستمر تیم آترین پک</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-5xl font-black mb-2">۱۵+</div>
+              <div className="text-5xl font-black mb-2 text-blue-600">۱۵+</div>
               <div className="text-xl font-bold">سال تجربه</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-black mb-2">۵۰۰+</div>
+              <div className="text-5xl font-black mb-2 text-green-600">۵۰۰+</div>
               <div className="text-xl font-bold">مشتری راضی</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-black mb-2">۱۰۰+</div>
+              <div className="text-5xl font-black mb-2 text-purple-600">۱۰۰+</div>
               <div className="text-xl font-bold">نوع محصول</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-black mb-2">۱۰</div>
+              <div className="text-5xl font-black mb-2 text-amber-600">۱۰</div>
               <div className="text-xl font-bold">کشور صادرات</div>
             </div>
           </div>
@@ -163,7 +213,7 @@ const About = () => {
       </section>
 
       {/* Certifications */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-black text-gray-800 mb-4">گواهینامه‌ها و افتخارات</h2>
@@ -171,7 +221,7 @@ const About = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 bg-gray-50 rounded-2xl">
+            <div className="text-center p-8 bg-white rounded-2xl shadow-lg">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Award className="w-12 h-12 text-green-600" />
               </div>
@@ -179,7 +229,7 @@ const About = () => {
               <p className="text-gray-600">سیستم مدیریت کیفیت</p>
             </div>
 
-            <div className="text-center p-8 bg-gray-50 rounded-2xl">
+            <div className="text-center p-8 bg-white rounded-2xl shadow-lg">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="w-12 h-12 text-blue-600" />
               </div>
@@ -187,7 +237,7 @@ const About = () => {
               <p className="text-gray-600">استاندارد اروپایی</p>
             </div>
 
-            <div className="text-center p-8 bg-gray-50 rounded-2xl">
+            <div className="text-center p-8 bg-white rounded-2xl shadow-lg">
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Crown className="w-12 h-12 text-purple-600" />
               </div>
@@ -197,6 +247,60 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* مودال کاتالوگ */}
+      {isCatalogModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-black text-gray-800 flex items-center">
+                  <FileText className="w-8 h-8 ml-3 text-amber-500" />
+                  کاتالوگ آترین پک ۲۰۲۴
+                </h3>
+                <button
+                  onClick={() => setIsCatalogModalOpen(false)}
+                  className="p-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-300"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="text-center">
+                <img 
+                  src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=800&fit=crop"
+                  alt="کاتالوگ کامل"
+                  className="w-full max-w-md mx-auto rounded-xl shadow-lg mb-6"
+                />
+                <p className="text-gray-600 mb-6">
+                  کاتالوگ کامل محصولات آترین پک شامل تمام شیشه‌ها، پمپ‌ها، درپوش‌ها و اسانس‌ها
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button 
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = '/catalog-atrinpack-2024.pdf';
+                      link.download = 'catalog-atrinpack-2024.pdf';
+                      link.click();
+                    }}
+                    className="bg-amber-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span>دانلود PDF</span>
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/products'}
+                    className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                  >
+                    <Eye className="w-5 h-5" />
+                    <span>مشاهده محصولات</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
