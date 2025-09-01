@@ -5,6 +5,8 @@ import ContactModal from '../components/ContactModal';
 import ProductCard from '../components/ProductCard';
 import NewsCard from '../components/NewsCard';
 import HeroSlider from '../components/HeroSlider';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { useProducts, useNews, contactOperations } from '../hooks/useSupabase';
 import { 
   Crown, 
   Award, 
@@ -31,6 +33,8 @@ import {
 } from 'lucide-react';
 
 const Index = () => {
+  const { products: allProducts, loading: productsLoading } = useProducts();
+  const { news: allNews, loading: newsLoading } = useNews();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [currentNewsSlide, setCurrentNewsSlide] = useState(0);
   const [contactForm, setContactForm] = useState({
@@ -40,123 +44,11 @@ const Index = () => {
     message: ''
   });
 
-  // محصولات ویژه - گرید ۳×۳
-  const featuredProducts = [
-    {
-      id: 1,
-      name: 'بطری عطر کریستالی 50ml',
-      category: 'شیشه و بطری',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true,
-      isFeatured: true
-    },
-    {
-      id: 2,
-      name: 'پمپ اسپری طلایی لوکس',
-      category: 'پمپ و اسپری',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 3,
-      name: 'درپوش هنری نقره‌ای',
-      category: 'درپوش',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true
-    },
-    {
-      id: 4,
-      name: 'اسانس گل رز طبیعی',
-      category: 'اسانس',
-      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 5,
-      name: 'بطری شیشه‌ای کلاسیک 100ml',
-      category: 'شیشه و بطری',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true
-    },
-    {
-      id: 6,
-      name: 'پمپ مه‌پاش پریمیوم',
-      category: 'پمپ و اسپری',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 7,
-      name: 'درپوش چوبی دست‌ساز',
-      category: 'درپوش',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true
-    },
-    {
-      id: 8,
-      name: 'دستگاه پلمپر اتوماتیک',
-      category: 'پلمپر',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isFeatured: true
-    },
-    {
-      id: 9,
-      name: 'شیشه ویژه کریستالی لوکس',
-      category: 'شیشه و بطری',
-      image: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=400&h=400&fit=crop',
-      price: 'استعلام قیمت',
-      isNew: true,
-      isFeatured: true
-    }
-  ];
+  // محصولات ویژه - فقط محصولات featured
+  const featuredProducts = allProducts.filter(product => product.is_featured).slice(0, 9);
 
   // اخبار برای کاروسل ۴ کارتی
-  const latestNews = [
-    {
-      id: 1,
-      title: 'راه‌اندازی خط تولید جدید شیشه‌های کریستالی',
-      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-      date: '۱۵ دی ۱۴۰۳',
-      category: 'اخبار تولید',
-      excerpt: 'آترین پک با راه‌اندازی خط تولید جدید، ظرفیت تولید شیشه‌های کریستالی را دو برابر کرده است.',
-      readTime: '۳ دقیقه مطالعه'
-    },
-    {
-      id: 2,
-      title: 'دریافت گواهینامه ISO 9001:2015',
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
-      date: '۱۰ دی ۱۴۰۳',
-      category: 'گواهینامه‌ها',
-      excerpt: 'شرکت آترین پک موفق به دریافت گواهینامه بین‌المللی کیفیت ISO 9001:2015 شده است.',
-      readTime: '۲ دقیقه مطالعه'
-    },
-    {
-      id: 3,
-      title: 'حضور در نمایشگاه بین‌المللی بسته‌بندی',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop',
-      date: '۵ دی ۱۴۰۳',
-      category: 'نمایشگاه‌ها',
-      excerpt: 'آترین پک در نمایشگاه بین‌المللی بسته‌بندی تهران حضور یافت و محصولات جدید خود را معرفی کرد.',
-      readTime: '۴ دقیقه مطالعه'
-    },
-    {
-      id: 4,
-      title: 'همکاری با برند معتبر فرانسوی',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop',
-      date: '۱ دی ۱۴۰۳',
-      category: 'همکاری‌ها',
-      excerpt: 'آترین پک قرارداد همکاری با یکی از برندهای معتبر فرانسوی در زمینه تولید بسته‌بندی لوکس امضا کرد.',
-      readTime: '۵ دقیقه مطالعه'
-    }
-  ];
+  const latestNews = allNews.slice(0, 4);
 
   // کاروسل اخبار
   useEffect(() => {
@@ -188,14 +80,35 @@ const Index = () => {
 
   const handleContactFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', contactForm);
-    alert('پیام شما با موفقیت ارسال شد. در اسرع وقت با شما تماس خواهیم گرفت.');
-    setContactForm({
-      name: '',
-      email: '',
-      phone: '',
-      message: ''
-    });
+    
+    const submitMessage = async () => {
+      try {
+        const { error } = await contactOperations.create({
+          name: contactForm.name,
+          email: contactForm.email,
+          phone: contactForm.phone,
+          company: '',
+          subject: 'تماس سریع از صفحه اصلی',
+          message: contactForm.message,
+          status: 'new'
+        });
+
+        if (error) throw error;
+
+        alert('پیام شما با موفقیت ارسال شد. در اسرع وقت با شما تماس خواهیم گرفت.');
+        setContactForm({
+          name: '',
+          email: '',
+          phone: '',
+          message: ''
+        });
+      } catch (error) {
+        console.error('Error submitting contact form:', error);
+        alert('خطا در ارسال پیام. لطفاً مجدداً تلاش کنید.');
+      }
+    };
+
+    submitMessage();
   };
 
   return (
@@ -216,10 +129,22 @@ const Index = () => {
             <p className="text-xl text-gray-600">برترین محصولات بسته‌بندی لوکس با کیفیت بین‌المللی</p>
           </div>
           
+          {productsLoading ? (
+            <LoadingSpinner message="در حال بارگذاری محصولات..." />
+          ) : (
+            <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {featuredProducts.map((product) => (
               <div key={product.id} className="group">
-                <ProductCard {...product} />
+                <ProductCard 
+                  id={product.id}
+                  name={product.name}
+                  category={product.category}
+                  image={product.image_url}
+                  price={product.price}
+                  isNew={product.is_new}
+                  isFeatured={product.is_featured}
+                />
                 {/* دکمه‌های هاور */}
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4 flex gap-3">
                   <button 
@@ -250,6 +175,8 @@ const Index = () => {
               <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -264,6 +191,10 @@ const Index = () => {
             <p className="text-xl text-gray-600">جدیدترین اخبار و رویدادهای شرکت</p>
           </div>
           
+          {newsLoading ? (
+            <LoadingSpinner message="در حال بارگذاری اخبار..." />
+          ) : latestNews.length > 0 ? (
+            <>
           <div className="relative">
             <div className="overflow-hidden rounded-2xl">
               <div 
@@ -272,7 +203,15 @@ const Index = () => {
               >
                 {latestNews.map((news, index) => (
                   <div key={news.id} className="w-full flex-shrink-0 px-4">
-                    <NewsCard news={news} />
+                    <NewsCard news={{
+                      id: news.id,
+                      title: news.title,
+                      image: news.image_url,
+                      date: new Date(news.date).toLocaleDateString('fa-IR'),
+                      category: news.category,
+                      excerpt: news.excerpt,
+                      readTime: news.read_time
+                    }} />
                   </div>
                 ))}
               </div>
@@ -318,6 +257,14 @@ const Index = () => {
               <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
+            </>
+          ) : (
+            <div className="text-center py-16">
+              <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-600 mb-2">خبری موجود نیست</h3>
+              <p className="text-gray-500">به زودی اخبار جدید منتشر خواهد شد</p>
+            </div>
+          )}
         </div>
       </section>
 

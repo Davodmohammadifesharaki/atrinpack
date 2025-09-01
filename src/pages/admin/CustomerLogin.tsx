@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useSupabase';
-import { Crown, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Crown, User, Lock, Eye, EyeOff, ArrowRight, ShoppingBag } from 'lucide-react';
 
-const AdminLogin = () => {
+const CustomerLogin = () => {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [formData, setFormData] = useState({
@@ -47,12 +47,12 @@ const AdminLogin = () => {
           return;
         }
 
-        if (!['admin', 'editor'].includes(profile.role)) {
-          setError('شما دسترسی به پنل مدیریت ندارید');
+        if (profile.role !== 'customer') {
+          setError('شما دسترسی به پنل مشتری ندارید');
           return;
         }
 
-        navigate('/admin/dashboard');
+        navigate('/customer/dashboard');
       }
     } catch (err) {
       setError('خطا در ورود. لطفاً مجدداً تلاش کنید.');
@@ -62,14 +62,14 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900 flex items-center justify-center p-4" dir="rtl">
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Crown className="w-12 h-12 text-white" />
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ShoppingBag className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-3xl font-black text-gray-800 mb-2">پنل مدیریت</h1>
+          <h1 className="text-3xl font-black text-gray-800 mb-2">پنل مشتری</h1>
           <p className="text-gray-600">آترین پک</p>
         </div>
 
@@ -90,7 +90,7 @@ const AdminLogin = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="ایمیل خود را وارد کنید"
                 required
                 disabled={isLoading}
@@ -107,7 +107,7 @@ const AdminLogin = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="رمز عبور خود را وارد کنید"
                 required
                 disabled={isLoading}
@@ -126,7 +126,7 @@ const AdminLogin = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center space-x-reverse space-x-2">
@@ -140,11 +140,11 @@ const AdminLogin = () => {
         </form>
 
         {/* Test Account Info */}
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-          <h3 className="text-sm font-bold text-amber-800 mb-2">حساب تست ادمین:</h3>
-          <div className="text-xs text-amber-700 space-y-1">
-            <div>ایمیل: <span className="font-bold">admin@atrinpack.com</span></div>
-            <div>رمز عبور: <span className="font-bold">admin123456</span></div>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <h3 className="text-sm font-bold text-blue-800 mb-2">حساب تست:</h3>
+          <div className="text-xs text-blue-700 space-y-1">
+            <div>ایمیل: <span className="font-bold">customer@example.com</span></div>
+            <div>رمز عبور: <span className="font-bold">customer123456</span></div>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ const AdminLogin = () => {
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate('/')}
-            className="text-amber-600 hover:text-amber-800 font-bold transition-colors flex items-center justify-center space-x-reverse space-x-2 mx-auto"
+            className="text-blue-600 hover:text-blue-800 font-bold transition-colors flex items-center justify-center space-x-reverse space-x-2 mx-auto"
           >
             <ArrowRight className="w-4 h-4" />
             <span>بازگشت به سایت</span>
@@ -163,4 +163,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default CustomerLogin;
