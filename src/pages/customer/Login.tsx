@@ -41,7 +41,7 @@ const CustomerLogin = () => {
           .from('user_profiles')
           .select('role, status')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle();
 
         if (!profile || profile.status !== 'active') {
           setError('حساب کاربری غیرفعال است');
