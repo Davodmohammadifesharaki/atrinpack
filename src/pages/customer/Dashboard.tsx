@@ -13,7 +13,8 @@ import {
   Clock,
   CheckCircle,
   Truck,
-  Award
+  Award,
+  ArrowRight
 } from 'lucide-react';
 
 const CustomerDashboard = () => {
