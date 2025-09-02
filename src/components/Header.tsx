@@ -222,8 +222,16 @@ const Header = () => {
           {/* User Icon */}
           <div className="flex items-center space-x-reverse space-x-4">
             <Link 
+              to="/customer/login"
+              className="p-3 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors duration-300 group"
+              title="ورود مشتری"
+            >
+              <User className="w-6 h-6 text-blue-600 group-hover:text-blue-700" />
+            </Link>
+            <Link 
               to="/admin/login"
               className="p-3 rounded-full bg-gray-100 hover:bg-amber-100 transition-colors duration-300 group"
+              title="ورود مدیریت"
             >
               <User className="w-6 h-6 text-gray-600 group-hover:text-amber-600" />
             </Link>

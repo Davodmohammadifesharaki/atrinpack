@@ -24,6 +24,13 @@ import AdminProfile from './pages/admin/Profile';
 import AdminCategories from './pages/admin/Categories';
 import AboutSettings from './pages/admin/AboutSettings';
 
+// Customer pages
+import CustomerLogin from './pages/customer/Login';
+import CustomerDashboard from './pages/customer/Dashboard';
+import CustomerProfile from './pages/customer/Profile';
+import CustomerOrders from './pages/customer/Orders';
+import CustomerWishlist from './pages/customer/Wishlist';
+
 // Add/Edit pages
 import AddProduct from './pages/admin/AddProduct';
 import EditProduct from './pages/admin/EditProduct';
@@ -66,6 +73,13 @@ function App() {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/about" element={<AboutSettings />} />
+          
+          {/* Customer Routes */}
+          <Route path="/customer/login" element={<CustomerLogin />} />
+          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="/customer/profile" element={<CustomerProfile />} />
+          <Route path="/customer/orders" element={<CustomerOrders />} />
+          <Route path="/customer/wishlist" element={<CustomerWishlist />} />
           
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
