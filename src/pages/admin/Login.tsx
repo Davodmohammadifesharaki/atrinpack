@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useSupabase';
+import { supabase } from '../../lib/supabase';
 import { Crown, User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 const AdminLogin = () => {
