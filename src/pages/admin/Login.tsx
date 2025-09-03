@@ -48,7 +48,7 @@ const AdminLogin = () => {
           return;
         }
 
-        if (!['admin', 'editor'].includes(profile.role)) {
+        if (profile.role !== 'admin') {
           setError('شما دسترسی به پنل مدیریت ندارید');
           return;
         }

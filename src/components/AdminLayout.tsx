@@ -29,7 +29,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [userRole, setUserRole] = useState<'admin' | 'editor' | 'viewer'>('admin');
+  const [userRole, setUserRole] = useState<'admin'>('admin');
   const [userInfo, setUserInfo] = useState({
     username: '',
     fullName: '',
@@ -48,7 +48,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     setUserRole(user.role || 'admin');
     setUserInfo({
       username: user.username || 'admin',
-      fullName: user.fullName || 'مدیر سیستم',
+      fullName: user.fullName || 'مدیر آترین پک',
       email: user.email || 'admin@atrinpack.com'
     });
   }, [navigate]);
@@ -69,25 +69,25 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: Home, 
       label: 'داشبورد', 
       path: '/admin/dashboard',
-      roles: ['admin', 'editor', 'viewer']
+      roles: ['admin']
     },
     { 
       icon: Package, 
       label: 'مدیریت محصولات', 
       path: '/admin/products',
-      roles: ['admin', 'editor']
+      roles: ['admin']
     },
     { 
       icon: Newspaper, 
       label: 'مدیریت اخبار', 
       path: '/admin/news',
-      roles: ['admin', 'editor']
+      roles: ['admin']
     },
     { 
       icon: Image, 
       label: 'مدیریت گالری', 
       path: '/admin/gallery',
-      roles: ['admin', 'editor']
+      roles: ['admin']
     },
     { 
       icon: Tags, 
@@ -117,7 +117,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: User, 
       label: 'پروفایل', 
       path: '/admin/profile',
-      roles: ['admin', 'editor', 'viewer']
+      roles: ['admin']
     }
   ];
 
@@ -126,18 +126,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'admin': return 'مدیر کل';
-      case 'editor': return 'ویرایشگر';
-      case 'viewer': return 'نمایشگر';
-      default: return 'کاربر';
+      default: return 'مدیر';
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-red-500';
-      case 'editor': return 'bg-blue-500';
-      case 'viewer': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      default: return 'bg-red-500';
     }
   };
 
