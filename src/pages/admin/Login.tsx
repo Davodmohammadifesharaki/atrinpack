@@ -53,6 +53,16 @@ const AdminLogin = () => {
           return;
         }
 
+        // ذخیره اطلاعات کاربر در localStorage
+        localStorage.setItem('adminUser', JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          role: profile.role,
+          status: profile.status,
+          username: profile.username || 'admin',
+          fullName: profile.full_name || 'مدیر آترین پک'
+        }));
+
         navigate('/admin/dashboard');
       }
     } catch (err) {
