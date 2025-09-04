@@ -24,3 +24,10 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "max-age=31536000"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Embedder-Policy = "credentialless"
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
