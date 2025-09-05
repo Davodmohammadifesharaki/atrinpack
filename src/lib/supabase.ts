@@ -11,11 +11,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Database Types
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   category: string;
   description?: string;
-  image_url: string;
+  image_url?: string;
   price?: string;
   min_order?: number;
   weight?: number;
@@ -33,12 +33,12 @@ export interface Product {
 }
 
 export interface News {
-  id: number;
+  id: string;
   title: string;
   category: string;
   content: string;
   excerpt?: string;
-  image_url: string;
+  image_url?: string;
   date: string;
   featured: boolean;
   visible: boolean;
@@ -49,11 +49,11 @@ export interface News {
 }
 
 export interface GalleryItem {
-  id: number;
+  id: string;
   title: string;
   category: string;
   description?: string;
-  image_url: string;
+  image_url?: string;
   views: number;
   downloads: number;
   created_at: string;
@@ -61,7 +61,7 @@ export interface GalleryItem {
 }
 
 export interface ContactMessage {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone?: string;

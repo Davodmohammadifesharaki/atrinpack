@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useAllNews, newsOperations } from '../../hooks/useSupabase';
 import { 
   Newspaper, 
   Plus, 
@@ -19,92 +22,55 @@ import {
 
 const AdminNews = () => {
   const navigate = useNavigate();
+  const { news, loading, error, refetch } = useAllNews();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
-  // نمونه داده‌های اخبار
-  const news = [
-    {
-      id: 1,
-      title: 'راه‌اندازی خط تولید جدید شیشه‌های کریستالی',
-      category: 'اخبار تولید',
-      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200&h=200&fit=crop',
-      status: 'منتشر شده',
-      featured: true,
-      date: '۱۵ دی ۱۴۰۳',
-      views: 245,
-      excerpt: 'آترین پک با راه‌اندازی خط تولید جدید، ظرفیت تولید شیشه‌های کریستالی را دو برابر کرده است.'
-    },
-    {
-      id: 2,
-      title: 'دریافت گواهینامه ISO 9001:2015',
-      category: 'گواهینامه‌ها',
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
-      status: 'منتشر شده',
-      featured: false,
-      date: '۱۰ دی ۱۴۰۳',
-      views: 189,
-      excerpt: 'شرکت آترین پک موفق به دریافت گواهینامه بین‌المللی کیفیت ISO 9001:2015 شده است.'
-    },
-    {
-      id: 3,
-      title: 'حضور در نمایشگاه بین‌المللی بسته‌بندی',
-      category: 'نمایشگاه‌ها',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=200&h=200&fit=crop',
-      status: 'پیش‌نویس',
-      featured: false,
-      date: '۵ دی ۱۴۰۳',
-      views: 0,
-      excerpt: 'آترین پک در نمایشگاه بین‌المللی بسته‌بندی تهران حضور یافت و محصولات جدید خود را معرفی کرد.'
-    },
-    {
-      id: 4,
-      title: 'معرفی سری جدید پمپ‌های اسپری طلایی',
-      category: 'محصولات جدید',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=200&h=200&fit=crop',
-      status: 'منتشر شده',
-      featured: true,
-      date: '۱ دی ۱۴۰۳',
-      views: 312,
-      excerpt: 'مجموعه جدید پمپ‌های اسپری با پوشش طلایی و کیفیت بالا به بازار عرضه شد.'
-    },
-    {
-      id: 5,
-      title: 'همکاری با برند معتبر فرانسوی',
-      category: 'اخبار تولید',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&h=200&fit=crop',
-      status: 'منتشر شده',
-      featured: false,
-      date: '۲۵ آذر ۱۴۰۳',
-      views: 156,
-      excerpt: 'آترین پک قرارداد همکاری با یکی از برندهای معتبر فرانسوی در زمینه تولید بسته‌بندی لوکس امضا کرد.'
-    }
-  ];
-
   const categories = ['همه', 'اخبار تولید', 'گواهینامه‌ها', 'نمایشگاه‌ها', 'محصولات جدید', 'فناوری'];
 
-  const filteredNews = news.filter(item => {
+  const filteredNews = (news || []).filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'همه' || selectedCategory === 'all' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const handleDeleteNews = (id: number) => {
+  const handleDeleteNews = async (id: string) => {
     if (confirm('آیا از حذف این خبر اطمینان دارید؟')) {
-      console.log('News deleted:', id);
-      alert('خبر با موفقیت حذف شد!');
+      try {
+        const { error } = await newsOperations.delete(id);
+        if (error) throw error;
+        alert('خبر با موفقیت حذف شد!');
+        refetch();
+      } catch (error) {
+        console.error('Error deleting news:', error);
+        alert('خطا در حذف خبر');
+      }
     }
   };
 
-  const toggleFeatured = (id: number) => {
-    console.log('Toggle featured for news:', id);
-    alert('وضعیت ویژه خبر تغییر کرد!');
+  const toggleFeatured = async (id: string, currentFeatured: boolean) => {
+    try {
+      const { error } = await newsOperations.toggleFeatured(id, !currentFeatured);
+      if (error) throw error;
+      alert('وضعیت ویژه خبر تغییر کرد!');
+      refetch();
+    } catch (error) {
+      console.error('Error toggling featured:', error);
+      alert('خطا در تغییر وضعیت ویژه');
+    }
   };
 
-  const toggleStatus = (id: number) => {
-    console.log('Toggle status for news:', id);
-    alert('وضعیت انتشار خبر تغییر کرد!');
+  const toggleStatus = async (id: string, currentVisible: boolean) => {
+    try {
+      const { error } = await newsOperations.toggleVisibility(id, !currentVisible);
+      if (error) throw error;
+      alert('وضعیت انتشار خبر تغییر کرد!');
+      refetch();
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      alert('خطا در تغییر وضعیت انتشار');
+    }
   };
 
   return (
@@ -125,6 +91,12 @@ const AdminNews = () => {
           </button>
         </div>
 
+        {loading ? (
+          <LoadingSpinner message="در حال بارگذاری اخبار..." />
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={refetch} />
+        ) : (
+          <>
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-lg">
@@ -143,7 +115,7 @@ const AdminNews = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-bold">منتشر شده</p>
-                <p className="text-3xl font-black text-gray-800 mt-2">{news.filter(n => n.status === 'منتشر شده').length}</p>
+                <p className="text-3xl font-black text-gray-800 mt-2">{news.filter(n => n.visible).length}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <Eye className="w-6 h-6 text-green-600" />
@@ -253,13 +225,15 @@ const AdminNews = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-reverse space-x-3">
                           <img 
-                            src={item.image} 
+                            src={item.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200&h=200&fit=crop'} 
                             alt={item.title}
                             className="w-16 h-16 object-cover rounded-lg"
                           />
                           <div>
                             <div className="font-bold text-gray-800">{item.title}</div>
-                            <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
+                            {item.excerpt && (
+                              <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
+                            )}
                             {item.featured && (
                               <span className="inline-flex items-center px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-bold mt-1">
                                 <Star className="w-3 h-3 ml-1" />
@@ -276,21 +250,21 @@ const AdminNews = () => {
                       </td>
                       <td className="px-6 py-4">
                         <button
-                          onClick={() => toggleStatus(item.id)}
+                          onClick={() => toggleStatus(item.id, item.visible)}
                           className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
-                            item.status === 'منتشر شده' 
+                            item.visible 
                               ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                               : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                           }`}
                         >
-                          {item.status}
+                          {item.visible ? 'منتشر شده' : 'پیش‌نویس'}
                         </button>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 font-bold">
                         {item.views.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {item.date}
+                        {new Date(item.date).toLocaleDateString('fa-IR')}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-reverse space-x-2">
@@ -302,7 +276,7 @@ const AdminNews = () => {
                             <Eye className="w-4 h-4" />
                           </button>
                           <button 
-                            onClick={() => toggleFeatured(item.id)}
+                            onClick={() => toggleFeatured(item.id, item.featured)}
                             className={`p-2 rounded-lg transition-colors ${
                               item.featured 
                                 ? 'bg-amber-100 text-amber-600 hover:bg-amber-200' 
@@ -339,15 +313,15 @@ const AdminNews = () => {
                 <div key={item.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative">
                     <img
-                      src={item.image}
+                      src={item.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200&h=200&fit=crop'}
                       alt={item.title}
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
                       <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                        item.status === 'منتشر شده' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
+                        item.visible ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
                       }`}>
-                        {item.status}
+                        {item.visible ? 'منتشر شده' : 'پیش‌نویس'}
                       </span>
                       {item.featured && (
                         <span className="px-2 py-1 bg-amber-500 text-white text-xs rounded-full font-bold">ویژه</span>
@@ -359,7 +333,7 @@ const AdminNews = () => {
                     <h3 className="font-bold text-gray-800 mb-2 line-clamp-2">{item.title}</h3>
                     <div className="text-sm text-gray-600 space-y-1 mb-3">
                       <div>دسته: {item.category}</div>
-                      <div>تاریخ: {item.date}</div>
+                      <div>تاریخ: {new Date(item.date).toLocaleDateString('fa-IR')}</div>
                       <div>بازدید: {item.views}</div>
                     </div>
 
@@ -405,6 +379,8 @@ const AdminNews = () => {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </AdminLayout>
   );
