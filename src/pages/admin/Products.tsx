@@ -1,61 +1,8 @@
+        alert('خطا در حذف محصول');
+      }
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import ErrorMessage from '../../components/ErrorMessage';
-import { useAllProducts, productOperations } from '../../hooks/useSupabase';
-import { 
-  Package, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Filter,
-  Eye,
-  Star,
-  Grid,
-  List,
-  TrendingUp,
-  ShoppingCart,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-
-const AdminProducts = () => {
-  const navigate = useNavigate();
-  const { products, loading, error, refetch } = useAllProducts();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-
-  const categories = ['همه', 'شیشه و بطری', 'پمپ و اسپری', 'درپوش', 'اسانس', 'پلمپر'];
-  const statuses = ['همه', 'فعال', 'غیرفعال'];
-
-  const filteredProducts = (products || []).filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'همه' || selectedCategory === 'all' || product.category === selectedCategory;
-    const matchesStatus = selectedStatus === 'همه' || selectedStatus === 'all' || 
-                         (selectedStatus === 'فعال' && product.visible) ||
-                         (selectedStatus === 'غیرفعال' && !product.visible);
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
-  const handleDeleteProduct = async (id: string) => {
-    if (confirm('آیا از حذف این محصول اطمینان دارید؟')) {
-      try {
-        const { error } = await productOperations.delete(id);
-        if (error) throw error;
-        alert('محصول با موفقیت حذف شد!');
-        refetch();
-      } catch (error) {
-        console.error('Error deleting product:', error);
-        alert('خطا در حذف محصول');
-      }
-    }
-  };
-
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
       const { error } = await productOperations.toggleFeatured(id, !currentFeatured);
@@ -66,8 +13,8 @@ const AdminProducts = () => {
       console.error('Error toggling featured:', error);
       alert('خطا در تغییر وضعیت ویژه');
     }
-  };
-
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
   const toggleStatus = async (id: string, currentVisible: boolean) => {
     try {
       const { error } = await productOperations.toggleVisibility(id, !currentVisible);
@@ -78,38 +25,37 @@ const AdminProducts = () => {
       console.error('Error toggling status:', error);
       alert('خطا در تغییر وضعیت محصول');
     }
-  };
-
+  Plus, 
+  Edit, 
   const getStatusIcon = (visible: boolean) => {
     return visible ? <CheckCircle className="w-4 h-4 text-green-600" /> : <AlertCircle className="w-4 h-4 text-red-600" />;
-  };
-
+  TrendingUp,
+  ShoppingCart,
   const getStatusColor = (visible: boolean) => {
     return visible ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200';
   };
 
   const getStatusText = (visible: boolean) => {
     return visible ? 'فعال' : 'غیرفعال';
-  };
+  const { products, loading, error, refetch } = useAllProducts();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
-  return (
-    <AdminLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-black text-gray-800">مدیریت محصولات</h1>
-            <p className="text-gray-600 mt-2">مدیریت و ویرایش محصولات سایت</p>
-          </div>
-          <button 
-            onClick={() => navigate('/admin/products/add')}
             className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-reverse space-x-2"
-          >
+  const statuses = ['همه', 'فعال', 'غیرفعال'];
             <Plus className="w-5 h-5" />
             <span>افزودن محصول جدید</span>
           </button>
         </div>
 
+        {loading ? (
+          <LoadingSpinner message="در حال بارگذاری محصولات..." />
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={refetch} />
+        ) : (
+          <>
         {loading ? (
           <LoadingSpinner message="در حال بارگذاری محصولات..." />
         ) : error ? (
@@ -304,13 +250,6 @@ const AdminProducts = () => {
                         <div className="text-sm text-gray-600">
                           {new Date(product.created_at).toLocaleDateString('fa-IR')}
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-reverse space-x-2">
-                          <button 
-                            onClick={() => window.open(`/product/${product.id}`, '_blank')}
-                            className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                            title="مشاهده محصول"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -351,7 +290,7 @@ const AdminProducts = () => {
               {filteredProducts.map((product) => (
                 <div key={product.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative">
-                    <img
+                            onClick={() => toggleFeatured(product.id, product.is_featured)}
                       src={product.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=200&h=200&fit=crop'}
                       alt={product.name}
                       className="w-full h-48 object-cover"
@@ -373,8 +312,6 @@ const AdminProducts = () => {
                       <div>کد: {product.id}</div>
                       <div>قیمت: {product.price || 'استعلام قیمت'}</div>
                       <div>حداقل سفارش: {product.min_order || 1} عدد</div>
-                    </div>
-
                     <div className="flex items-center justify-between mb-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center ${getStatusColor(product.visible)}`}>
                         {getStatusIcon(product.visible)}
@@ -386,9 +323,9 @@ const AdminProducts = () => {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-reverse space-x-1">
-                        <button 
-                          onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center ${getStatusColor(product.visible)}`}>
+                        {getStatusIcon(product.visible)}
+                        <span className="mr-1">{getStatusText(product.visible)}</span>
                           className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
@@ -402,9 +339,8 @@ const AdminProducts = () => {
                         <button 
                           onClick={() => handleDeleteProduct(product.id)}
                           className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <div className="text-xs text-gray-500">
+                        {new Date(product.created_at).toLocaleDateString('fa-IR')}
                       </div>
                     </div>
                   </div>
@@ -415,23 +351,32 @@ const AdminProducts = () => {
 
           {filteredProducts.length === 0 && (
             <div className="text-center py-16">
+  const filteredProducts = (products || []).filter(product => {
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-600 mb-2">محصولی یافت نشد</h3>
+                         product.id.toLowerCase().includes(searchTerm.toLowerCase());
               <p className="text-gray-500 mb-4">لطفاً فیلترها را تغییر دهید یا محصول جدید اضافه کنید</p>
-              <button 
+    const matchesStatus = selectedStatus === 'همه' || selectedStatus === 'all' || 
                 onClick={() => navigate('/admin/products/add')}
-                className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300"
+                         (selectedStatus === 'فعال' && product.visible) ||
               >
+                         (selectedStatus === 'غیرفعال' && !product.visible);
                 افزودن اولین محصول
               </button>
             </div>
+  const handleDeleteProduct = async (id: string) => {
+      try {
           )}
-        </div>
+        const { error } = await productOperations.delete(id);
+      </div>
+        if (error) throw error;
+    </AdminLayout>
+        alert('محصول با موفقیت حذف شد!');
+  );
+        refetch();
+};
+      } catch (error) {
+
+        console.error('Error deleting product:', error);
+export default AdminProducts;
           </>
         )}
-      </div>
-    </AdminLayout>
-  );
-};
-
-export default AdminProducts;

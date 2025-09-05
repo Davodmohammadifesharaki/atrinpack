@@ -4,39 +4,11 @@ import AdminLayout from '../../components/AdminLayout';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useAllNews, newsOperations } from '../../hooks/useSupabase';
-import { 
-  Newspaper, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Filter,
-  Eye,
-  Calendar,
-  Tag,
-  Star,
-  Grid,
-  List,
-  TrendingUp
-} from 'lucide-react';
-
-const AdminNews = () => {
-  const navigate = useNavigate();
-  const { news, loading, error, refetch } = useAllNews();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-
-  const categories = ['همه', 'اخبار تولید', 'گواهینامه‌ها', 'نمایشگاه‌ها', 'محصولات جدید', 'فناوری'];
-
-  const filteredNews = (news || []).filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'همه' || selectedCategory === 'all' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useAllNews, newsOperations } from '../../hooks/useSupabase';
   const handleDeleteNews = async (id: string) => {
-    if (confirm('آیا از حذف این خبر اطمینان دارید؟')) {
+  Newspaper, 
       try {
         const { error } = await newsOperations.delete(id);
         if (error) throw error;
@@ -46,9 +18,9 @@ const AdminNews = () => {
         console.error('Error deleting news:', error);
         alert('خطا در حذف خبر');
       }
-    }
-  };
-
+  Trash2, 
+  Search, 
+  Filter,
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
       const { error } = await newsOperations.toggleFeatured(id, !currentFeatured);
@@ -59,8 +31,8 @@ const AdminNews = () => {
       console.error('Error toggling featured:', error);
       alert('خطا در تغییر وضعیت ویژه');
     }
-  };
-
+  Star,
+  Grid,
   const toggleStatus = async (id: string, currentVisible: boolean) => {
     try {
       const { error } = await newsOperations.toggleVisibility(id, !currentVisible);
@@ -71,26 +43,26 @@ const AdminNews = () => {
       console.error('Error toggling status:', error);
       alert('خطا در تغییر وضعیت انتشار');
     }
-  };
 
-  return (
-    <AdminLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-black text-gray-800">مدیریت اخبار</h1>
-            <p className="text-gray-600 mt-2">مدیریت و ویرایش اخبار سایت</p>
-          </div>
-          <button 
-            onClick={() => navigate('/admin/news/add')}
-            className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-reverse space-x-2"
-          >
+const AdminNews = () => {
+  const navigate = useNavigate();
+  const { news, loading, error, refetch } = useAllNews();
+  const { news, loading, error, refetch } = useAllNews();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+
             <Plus className="w-5 h-5" />
             <span>افزودن خبر جدید</span>
-          </button>
+  const filteredNews = (news || []).filter(item => {
         </div>
 
+        {loading ? (
+          <LoadingSpinner message="در حال بارگذاری اخبار..." />
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={refetch} />
+        ) : (
+          <>
         {loading ? (
           <LoadingSpinner message="در حال بارگذاری اخبار..." />
         ) : error ? (
@@ -232,6 +204,8 @@ const AdminNews = () => {
                           <div>
                             <div className="font-bold text-gray-800">{item.title}</div>
                             {item.excerpt && (
+                              <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
+                            )}
                               <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
                             )}
                             {item.featured && (
@@ -379,6 +353,8 @@ const AdminNews = () => {
             </div>
           )}
         </div>
+          </>
+        )}
           </>
         )}
       </div>

@@ -5,13 +5,20 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useNewsItem, useNews } from '../hooks/useSupabase';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { useNewsItem, useNews } from '../hooks/useSupabase';
 import { Calendar, Tag, Share2, ArrowRight } from 'lucide-react';
 
 const NewsDetail = () => {
   const { id } = useParams();
   const { news, loading, error } = useNewsItem(id || '');
   const { news: allNews } = useNews();
+  const { news, loading, error } = useNewsItem(id || '');
+  const { news: allNews } = useNews();
 
+  // اخبار مرتبط - فیلتر بر اساس دسته‌بندی مشابه
+  const relatedNews = allNews
   // اخبار مرتبط - فیلتر بر اساس دسته‌بندی مشابه
   const relatedNews = allNews
     .filter(n => n.id !== id && n.category === news?.category)
@@ -59,40 +66,32 @@ const NewsDetail = () => {
             <img 
               src={news.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop'}
               alt={news.title}
-              className="w-full h-80 object-cover"
-            />
-            
-            <div className="p-8">
-              <div className="flex items-center space-x-reverse space-x-4 mb-4">
-                <div className="flex items-center space-x-reverse space-x-2 text-gray-500">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-bold">{new Date(news.date).toLocaleDateString('fa-IR')}</span>
-                </div>
-                
-                <div className="flex items-center space-x-reverse space-x-2">
-                  <Tag className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-bold text-blue-600">{news.category}</span>
-                </div>
-                
-                {news.read_time && (
-                  <span className="text-sm text-gray-500">{news.read_time}</span>
-                )}
-              </div>
-              
-              <h1 className="text-3xl lg:text-4xl font-black text-gray-800 mb-6 leading-tight">
-                {news.title}
-              </h1>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-reverse space-x-4">
-                  <button className="flex items-center space-x-reverse space-x-2 text-blue-600 hover:text-blue-800 transition-colors">
-                    <Share2 className="w-5 h-5" />
-                    <span>اشتراک‌گذاری</span>
-                  </button>
-                </div>
+          {relatedNews.length > 0 && (
+            <div className="mt-16">
+              <h2 className="text-2xl font-black text-gray-800 mb-8">اخبار مرتبط</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {relatedNews.map((relatedNewsItem) => (
+                  <div key={relatedNewsItem.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <img 
+                      src={relatedNewsItem.image_url || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=200&fit=crop'}
+                      alt={relatedNewsItem.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-6">
+                      <h3 className="text-lg font-black text-gray-800 mb-2">
+                        {relatedNewsItem.title}
+                      </h3>
+                      {relatedNewsItem.excerpt && (
+                        <p className="text-gray-600 text-sm">
+                          {relatedNewsItem.excerpt}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Article Content */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
