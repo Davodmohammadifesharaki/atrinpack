@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 
 interface ProductCardProps {
-  id: number;
+  id: string;
   name: string;
   category: string;
   image: string;

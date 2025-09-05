@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 interface News {
-  id: number;
+  id: string;
   title: string;
   image: string;
   date: string;
