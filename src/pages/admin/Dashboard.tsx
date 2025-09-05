@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import { useAllProducts, useAllNews, useGallery, useContactMessages } from '../../hooks/useSupabase';
 import { 
   Package, 
   Newspaper, 
@@ -25,11 +26,17 @@ import {
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
+  // Get real data from hooks
+  const { products } = useAllProducts();
+  const { news } = useAllNews();
+  const { gallery } = useGallery();
+  const { messages } = useContactMessages();
+
   const stats = [
     {
       title: 'کل محصولات',
-      value: '156',
-      change: '+12',
+      value: products?.length.toString() || '0',
+      change: '+0',
       changeType: 'increase',
       icon: Package,
       color: 'blue',
@@ -37,8 +44,8 @@ const AdminDashboard = () => {
     },
     {
       title: 'اخبار منتشر شده',
-      value: '43',
-      change: '+5',
+      value: news?.filter(n => n.visible).length.toString() || '0',
+      change: '+0',
       changeType: 'increase',
       icon: Newspaper,
       color: 'green',
@@ -46,8 +53,8 @@ const AdminDashboard = () => {
     },
     {
       title: 'تصاویر گالری',
-      value: '89',
-      change: '+8',
+      value: gallery?.length.toString() || '0',
+      change: '+0',
       changeType: 'increase',
       icon: Image,
       color: 'purple',
@@ -55,8 +62,8 @@ const AdminDashboard = () => {
     },
     {
       title: 'پیام‌های جدید',
-      value: '24',
-      change: '+3',
+      value: messages?.filter(m => m.status === 'new').length.toString() || '0',
+      change: '+0',
       changeType: 'increase',
       icon: MessageSquare,
       color: 'amber',
@@ -109,58 +116,39 @@ const AdminDashboard = () => {
     }
   ];
 
+  // Generate recent activities from real data
   const recentActivities = [
-    {
-      id: 1,
+    ...(products?.slice(0, 2).map(product => ({
+      id: `product-${product.id}`,
       type: 'product',
       title: 'محصول جدید اضافه شد',
-      description: 'بطری عطر کریستالی 75ml',
-      time: '۵ دقیقه پیش',
+      description: product.name,
+      time: new Date(product.created_at).toLocaleDateString('fa-IR'),
       icon: Package,
       color: 'blue',
-      user: 'امین جعفری'
-    },
-    {
-      id: 2,
+      user: 'مدیر سیستم'
+    })) || []),
+    ...(news?.slice(0, 2).map(newsItem => ({
+      id: `news-${newsItem.id}`,
       type: 'news',
       title: 'خبر جدید منتشر شد',
-      description: 'راه‌اندازی خط تولید جدید',
-      time: '۱۰ دقیقه پیش',
+      description: newsItem.title,
+      time: new Date(newsItem.created_at).toLocaleDateString('fa-IR'),
       icon: Newspaper,
       color: 'green',
-      user: 'امین جعفری'
-    },
-    {
-      id: 3,
+      user: 'مدیر سیستم'
+    })) || []),
+    ...(messages?.slice(0, 1).map(message => ({
+      id: `message-${message.id}`,
       type: 'message',
       title: 'پیام جدید دریافت شد',
-      description: 'درخواست مشاوره از مشتری',
-      time: '۱۵ دقیقه پیش',
+      description: message.subject,
+      time: new Date(message.created_at).toLocaleDateString('fa-IR'),
       icon: MessageSquare,
       color: 'amber',
       user: 'سیستم'
-    },
-    {
-      id: 4,
-      type: 'gallery',
-      title: 'تصویر جدید آپلود شد',
-      description: 'تصویر پمپ اسپری جدید',
-      time: '۲۰ دقیقه پیش',
-      icon: Image,
-      color: 'purple',
-      user: 'امین جعفری'
-    },
-    {
-      id: 5,
-      type: 'user',
-      title: 'کاربر جدید اضافه شد',
-      description: 'مریم احمدی - ویرایشگر',
-      time: '۱ ساعت پیش',
-      icon: Users,
-      color: 'indigo',
-      user: 'امین جعفری'
-    }
-  ];
+    })) || [])
+  ].slice(0, 5);
 
   const systemStatus = [
     {
@@ -345,7 +333,7 @@ const AdminDashboard = () => {
             </div>
             <h3 className="text-lg font-black text-gray-800 mb-2">محصولات</h3>
             <p className="text-gray-600 text-sm">مدیریت کامل محصولات</p>
-            <div className="mt-4 text-2xl font-black text-blue-600">156</div>
+            <div className="mt-4 text-2xl font-black text-blue-600">{products?.length || 0}</div>
           </div>
 
           <div 
@@ -360,7 +348,7 @@ const AdminDashboard = () => {
             </div>
             <h3 className="text-lg font-black text-gray-800 mb-2">اخبار</h3>
             <p className="text-gray-600 text-sm">مدیریت اخبار و مقالات</p>
-            <div className="mt-4 text-2xl font-black text-green-600">43</div>
+            <div className="mt-4 text-2xl font-black text-green-600">{news?.length || 0}</div>
           </div>
 
           <div 
@@ -375,7 +363,7 @@ const AdminDashboard = () => {
             </div>
             <h3 className="text-lg font-black text-gray-800 mb-2">گالری</h3>
             <p className="text-gray-600 text-sm">مدیریت تصاویر سایت</p>
-            <div className="mt-4 text-2xl font-black text-purple-600">89</div>
+            <div className="mt-4 text-2xl font-black text-purple-600">{gallery?.length || 0}</div>
           </div>
 
           <div 
@@ -390,7 +378,7 @@ const AdminDashboard = () => {
             </div>
             <h3 className="text-lg font-black text-gray-800 mb-2">پیام‌ها</h3>
             <p className="text-gray-600 text-sm">پیام‌های دریافتی</p>
-            <div className="mt-4 text-2xl font-black text-amber-600">24</div>
+            <div className="mt-4 text-2xl font-black text-amber-600">{messages?.length || 0}</div>
           </div>
         </div>
 

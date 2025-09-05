@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useProducts } from '../hooks/useSupabase';
 import { Palette, RotateCcw, Download, Phone } from 'lucide-react';
 
 interface BottleOption {
@@ -33,90 +34,43 @@ const MixMatchDesigner = () => {
   const [selectedPump, setSelectedPump] = useState<PumpOption | null>(null);
   const [selectedCap, setSelectedCap] = useState<CapOption | null>(null);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const { products } = useProducts();
 
-  // نمونه داده‌های شیشه‌ها
-  const bottles: BottleOption[] = [
-    {
-      id: 1,
-      name: 'شیشه کریستالی مربع',
-      shape: 'مربع',
-      volume: '50ml',
-      material: 'کریستال',
-      color: 'شفاف',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'شیشه دایره‌ای کلاسیک',
-      shape: 'دایره',
-      volume: '30ml',
-      material: 'شیشه',
-      color: 'آبی',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=300&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'شیشه بیضی مدرن',
-      shape: 'بیضی',
-      volume: '75ml',
-      material: 'شیشه',
-      color: 'مشکی',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop'
-    }
-  ];
+  // Get bottles from products with show_in_mix_match = true
+  const bottles: BottleOption[] = (products || [])
+    .filter(p => p.show_in_mix_match && p.category.includes('شیشه'))
+    .map(p => ({
+      id: parseInt(p.id),
+      name: p.name,
+      shape: p.shape || 'نامشخص',
+      volume: p.volume || 'نامشخص',
+      material: p.material || 'نامشخص',
+      color: p.color || 'نامشخص',
+      image: p.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+    }));
 
-  // نمونه داده‌های پمپ‌ها
-  const pumps: PumpOption[] = [
-    {
-      id: 1,
-      name: 'پمپ اسپری طلایی',
-      type: 'اسپری',
-      color: 'طلایی',
-      material: 'فلز',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=200&h=200&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'پمپ مه‌پاش نقره‌ای',
-      type: 'مه‌پاش',
-      color: 'نقره‌ای',
-      material: 'فلز',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'پمپ قطره‌چکان',
-      type: 'قطره‌چکان',
-      color: 'مشکی',
-      material: 'پلاستیک',
-      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=200&h=200&fit=crop'
-    }
-  ];
+  // Get pumps from products
+  const pumps: PumpOption[] = (products || [])
+    .filter(p => p.show_in_mix_match && p.category.includes('پمپ'))
+    .map(p => ({
+      id: parseInt(p.id),
+      name: p.name,
+      type: p.category,
+      color: p.color || 'نامشخص',
+      material: p.material || 'نامشخص',
+      image: p.image_url || 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=200&h=200&fit=crop'
+    }));
 
-  // نمونه داده‌های درپوش‌ها
-  const caps: CapOption[] = [
-    {
-      id: 1,
-      name: 'درپوش چوبی کلاسیک',
-      material: 'چوب',
-      color: 'قهوه‌ای',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'درپوش فلزی طلایی',
-      material: 'فلز',
-      color: 'طلایی',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=150&h=150&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'درپوش پلاستیکی شفاف',
-      material: 'پلاستیک',
-      color: 'شفاف',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=150&h=150&fit=crop'
-    }
-  ];
+  // Get caps from products
+  const caps: CapOption[] = (products || [])
+    .filter(p => p.show_in_mix_match && p.category.includes('درپوش'))
+    .map(p => ({
+      id: parseInt(p.id),
+      name: p.name,
+      material: p.material || 'نامشخص',
+      color: p.color || 'نامشخص',
+      image: p.image_url || 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop'
+    }));
 
   const resetSelection = () => {
     setSelectedBottle(null);
@@ -166,6 +120,12 @@ const MixMatchDesigner = () => {
                 </div>
               </div>
             ))}
+            {bottles.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <p>هیچ شیشه‌ای برای Mix & Match موجود نیست</p>
+                <p className="text-xs mt-1">ابتدا محصولات را اضافه کنید</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -198,6 +158,12 @@ const MixMatchDesigner = () => {
                 </div>
               </div>
             ))}
+            {pumps.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <p>هیچ پمپی برای Mix & Match موجود نیست</p>
+                <p className="text-xs mt-1">ابتدا محصولات را اضافه کنید</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -229,6 +195,12 @@ const MixMatchDesigner = () => {
                 </div>
               </div>
             ))}
+            {caps.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <p>هیچ درپوشی برای Mix & Match موجود نیست</p>
+                <p className="text-xs mt-1">ابتدا محصولات را اضافه کنید</p>
+              </div>
+            )}
           </div>
         </div>
 

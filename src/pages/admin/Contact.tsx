@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useContactMessages } from '../../hooks/useSupabase';
 import { 
   MessageSquare, 
   Phone, 
@@ -17,6 +20,7 @@ import {
 
 const AdminContact = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const { messages, loading, error, refetch } = useContactMessages();
   const [contactData, setContactData] = useState({
     phones: ['021-12345678', '09123456789'],
     emails: ['info@atrinpack.com', 'sales@atrinpack.com'],
@@ -34,29 +38,6 @@ const AdminContact = () => {
     mapLocation: 'https://maps.google.com/?q=35.6892,51.3890'
   });
 
-  // پیام‌های دریافتی
-  const messages = [
-    {
-      id: 1,
-      name: 'احمد محمدی',
-      email: 'ahmad@example.com',
-      phone: '09123456789',
-      subject: 'استعلام قیمت',
-      message: 'سلام، می‌خواهم قیمت بطری‌های 50ml را بدانم.',
-      date: '۱۵ دی ۱۴۰۳',
-      status: 'جدید'
-    },
-    {
-      id: 2,
-      name: 'فاطمه احمدی',
-      email: 'fateme@example.com',
-      phone: '09987654321',
-      subject: 'مشاوره محصول',
-      message: 'برای انتخاب پمپ مناسب نیاز به مشاوره دارم.',
-      date: '۱۰ دی ۱۴۰۳',
-      status: 'پاسخ داده شده'
-    }
-  ];
 
   const handleSave = () => {
     console.log('Contact data saved:', contactData);
@@ -189,24 +170,29 @@ const AdminContact = () => {
         <div className="bg-white rounded-2xl shadow-lg p-6">
           <h2 className="text-xl font-black text-gray-800 mb-6">پیام‌های دریافتی</h2>
           
+          {loading ? (
+            <LoadingSpinner message="در حال بارگذاری پیام‌ها..." />
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={refetch} />
+          ) : (
           <div className="space-y-4">
-            {messages.map((message) => (
+            {(messages || []).map((message) => (
               <div key={message.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-reverse space-x-4">
                       <h3 className="text-lg font-bold text-gray-800">{message.name}</h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        message.status === 'جدید' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                        message.status === 'new' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
                       }`}>
-                        {message.status}
+                        {message.status === 'new' ? 'جدید' : message.status === 'replied' ? 'پاسخ داده شده' : 'بسته شده'}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600 space-y-1">
                       <div>ایمیل: {message.email}</div>
-                      <div>تلفن: {message.phone}</div>
+                      <div>تلفن: {message.phone || 'ندارد'}</div>
                       <div>موضوع: {message.subject}</div>
-                      <div>تاریخ: {message.date}</div>
+                      <div>تاریخ: {new Date(message.created_at).toLocaleDateString('fa-IR')}</div>
                     </div>
                     <p className="text-gray-700 mt-3">{message.message}</p>
                   </div>
@@ -222,7 +208,15 @@ const AdminContact = () => {
                 </div>
               </div>
             ))}
+            {(!messages || messages.length === 0) && (
+              <div className="text-center py-16">
+                <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-gray-600 mb-2">پیامی دریافت نشده</h3>
+                <p className="text-gray-500">هنوز پیامی از طریق فرم تماس دریافت نشده است</p>
+              </div>
+            )}
           </div>
+          )}
         </div>
       </div>
     </AdminLayout>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
+import { supabase } from '../../lib/supabase';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import { 
@@ -45,48 +47,29 @@ const AdminUsers = () => {
     role: 'editor'
   });
 
-  // نمونه داده‌های کاربران
-  const users = [
-    {
-      id: 1,
-      fullName: 'امین جعفری',
-      username: 'aminjafari',
-      email: 'admin@atrinpack.com',
-      phone: '09123456789',
-      company: 'آترین پک',
-      role: 'admin',
-      status: 'فعال',
-      lastLogin: '۱۵ دی ۱۴۰۳',
-      joinDate: '۱ فروردین ۱۴۰۰',
-      avatar: null
-    },
-    {
-      id: 2,
-      fullName: 'مریم احمدی',
-      username: 'maryam.ahmadi',
-      email: 'maryam@atrinpack.com',
-      phone: '09987654321',
-      company: 'آترین پک',
-      role: 'editor',
-      status: 'فعال',
-      lastLogin: '۱۰ دی ۱۴۰۳',
-      joinDate: '۱۵ خرداد ۱۴۰۲',
-      avatar: null
-    },
-    {
-      id: 3,
-      fullName: 'علی رضایی',
-      username: 'ali.rezaei',
-      email: 'ali@atrinpack.com',
-      phone: '09111222333',
-      company: 'شرکت پارس عطر',
-      role: 'viewer',
-      status: 'غیرفعال',
-      lastLogin: '۵ دی ۱۴۰۳',
-      joinDate: '۲۰ مهر ۱۴۰۲',
-      avatar: null
-    }
-  ];
+  // Get real users from Supabase
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setUsers(data || []);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter(user => 
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,26 +120,16 @@ const AdminUsers = () => {
   };
 
   const handleDeleteUser = (user: any) => {
-    if (user.username === 'aminjafari') {
-      alert('نمی‌توانید کاربر اصلی ادمین را حذف کنید!');
-      return;
-    }
-    
-    if (confirm(`آیا از حذف کاربر ${user.fullName} اطمینان دارید؟`)) {
+    if (confirm(`آیا از حذف کاربر ${user.full_name} اطمینان دارید؟`)) {
       console.log('User deleted:', user.id);
-      alert(`کاربر ${user.fullName} با موفقیت حذف شد!`);
+      alert(`کاربر ${user.full_name} با موفقیت حذف شد!`);
     }
   };
 
   const toggleUserStatus = (user: any) => {
-    if (user.username === 'aminjafari') {
-      alert('نمی‌توانید وضعیت کاربر اصلی ادمین را تغییر دهید!');
-      return;
-    }
-    
-    const newStatus = user.status === 'فعال' ? 'غیرفعال' : 'فعال';
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
     console.log(`User ${user.id} status changed to:`, newStatus);
-    alert(`وضعیت کاربر ${user.fullName} به ${newStatus} تغییر کرد!`);
+    alert(`وضعیت کاربر ${user.full_name} تغییر کرد!`);
   };
 
   const getRoleLabel = (role: string) => {
@@ -217,6 +190,9 @@ const AdminUsers = () => {
             </h2>
           </div>
 
+          {loading ? (
+            <LoadingSpinner message="در حال بارگذاری کاربران..." />
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
@@ -238,7 +214,7 @@ const AdminUsers = () => {
                           <User className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                          <div className="font-bold text-gray-800">{user.fullName}</div>
+                          <div className="font-bold text-gray-800">{user.full_name}</div>
                           <div className="text-sm text-gray-600">@{user.username}</div>
                         </div>
                       </div>
@@ -268,19 +244,19 @@ const AdminUsers = () => {
                       <button
                         onClick={() => toggleUserStatus(user)}
                         className={`px-3 py-1 rounded-full text-sm font-bold flex items-center transition-colors ${
-                          user.status === 'فعال' 
+                          user.status === 'active' 
                             ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                             : 'bg-red-100 text-red-700 hover:bg-red-200'
                         }`}
                       >
-                        {user.status === 'فعال' ? <UserCheck className="w-3 h-3 ml-1" /> : <UserX className="w-3 h-3 ml-1" />}
-                        {user.status}
+                        {user.status === 'active' ? <UserCheck className="w-3 h-3 ml-1" /> : <UserX className="w-3 h-3 ml-1" />}
+                        {user.status === 'active' ? 'فعال' : 'غیرفعال'}
                       </button>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 ml-1 text-gray-400" />
-                        {user.lastLogin}
+                        {user.last_login ? new Date(user.last_login).toLocaleDateString('fa-IR') : 'هرگز'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -299,7 +275,6 @@ const AdminUsers = () => {
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        {user.username !== 'aminjafari' && (
                           <button 
                             onClick={() => handleDeleteUser(user)}
                             className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
@@ -307,7 +282,6 @@ const AdminUsers = () => {
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -315,6 +289,7 @@ const AdminUsers = () => {
               </tbody>
             </table>
           </div>
+          )}
 
           {filteredUsers.length === 0 && (
             <div className="text-center py-16">

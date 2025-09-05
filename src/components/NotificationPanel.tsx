@@ -13,58 +13,8 @@ import {
 
 const NotificationPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications] = useState([
-    {
-      id: 1,
-      type: 'product',
-      title: 'محصول جدید اضافه شد',
-      message: 'شیشه کریستالی لوکس 75ml به محصولات اضافه شد',
-      time: '۵ دقیقه پیش',
-      icon: Package,
-      color: 'blue',
-      isRead: false
-    },
-    {
-      id: 2,
-      type: 'user',
-      title: 'کاربر جدید ثبت‌نام کرد',
-      message: 'احمد محمدی به سیستم اضافه شد',
-      time: '۱۰ دقیقه پیش',
-      icon: Users,
-      color: 'green',
-      isRead: false
-    },
-    {
-      id: 3,
-      type: 'news',
-      title: 'خبر منتشر شد',
-      message: 'خبر همکاری با برند فرانسوی منتشر شد',
-      time: '۱۵ دقیقه پیش',
-      icon: Newspaper,
-      color: 'purple',
-      isRead: true
-    },
-    {
-      id: 4,
-      type: 'contact',
-      title: 'درخواست تماس جدید',
-      message: 'مشتری جدید درخواست مشاوره کرده است',
-      time: '۲۰ دقیقه پیش',
-      icon: Phone,
-      color: 'amber',
-      isRead: true
-    },
-    {
-      id: 5,
-      type: 'system',
-      title: 'بروزرسانی سیستم',
-      message: 'سیستم با موفقیت بروزرسانی شد',
-      time: '۱ ساعت پیش',
-      icon: Settings,
-      color: 'gray',
-      isRead: true
-    }
-  ]);
+  // Empty notifications - will be populated from real data
+  const [notifications] = useState([]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -97,7 +47,7 @@ const NotificationPanel = () => {
           </div>
 
           <div className="p-2">
-            {notifications.map((notification) => (
+            {notifications.length > 0 ? notifications.map((notification) => (
               <div
                 key={notification.id}
                 className={`flex items-start space-x-reverse space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300 ${
@@ -121,7 +71,12 @@ const NotificationPanel = () => {
                   <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center py-8 text-gray-500">
+                <Bell className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p className="text-sm">اعلانی موجود نیست</p>
+              </div>
+            )}
           </div>
 
           <div className="p-4 border-t border-gray-200">

@@ -150,14 +150,6 @@ const AdminLogin = () => {
           </button>
         </form>
 
-        {/* Test Account Info */}
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-          <h3 className="text-sm font-bold text-amber-800 mb-2">حساب تست ادمین:</h3>
-          <div className="text-xs text-amber-700 space-y-1">
-            <div>ایمیل: <span className="font-bold">admin@atrinpack.com</span></div>
-            <div>رمز عبور: <span className="font-bold">admin123456</span></div>
-          </div>
-        </div>
 
         {/* Back to Site */}
         <div className="mt-6 text-center">

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useGallery } from '../../hooks/useSupabase';
 import { 
   Image, 
   Plus, 
@@ -19,77 +22,15 @@ import {
 
 const AdminGallery = () => {
   const navigate = useNavigate();
+  const { gallery, loading, error, refetch } = useGallery();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // نمونه داده‌های گالری
-  const galleryItems = [
-    {
-      id: 1,
-      title: 'بطری عطر کریستالی طلایی',
-      category: 'شیشه و بطری',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop',
-      uploadDate: '۱۵ دی ۱۴۰۳',
-      size: '2.3 MB',
-      views: 156,
-      downloads: 23
-    },
-    {
-      id: 2,
-      title: 'پمپ اسپری لوکس نقره‌ای',
-      category: 'پمپ و اسپری',
-      image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=300&h=300&fit=crop',
-      uploadDate: '۱۰ دی ۱۴۰۳',
-      size: '1.8 MB',
-      views: 134,
-      downloads: 18
-    },
-    {
-      id: 3,
-      title: 'درپوش هنری نقره‌ای',
-      category: 'درپوش',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=300&fit=crop',
-      uploadDate: '۵ دی ۱۴۰۳',
-      size: '1.5 MB',
-      views: 98,
-      downloads: 12
-    },
-    {
-      id: 4,
-      title: 'اسانس گل رز طبیعی',
-      category: 'اسانس',
-      image: 'https://images.unsplash.com/photo-1588159343745-445ae0b16383?w=300&h=300&fit=crop',
-      uploadDate: '۱ دی ۱۴۰۳',
-      size: '2.1 MB',
-      views: 201,
-      downloads: 34
-    },
-    {
-      id: 5,
-      title: 'بطری شیشه‌ای کلاسیک',
-      category: 'شیشه و بطری',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=300&fit=crop',
-      uploadDate: '۲۵ آذر ۱۴۰۳',
-      size: '1.9 MB',
-      views: 87,
-      downloads: 9
-    },
-    {
-      id: 6,
-      title: 'دستگاه پلمپر اتوماتیک',
-      category: 'پلمپر',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=300&fit=crop',
-      uploadDate: '۲۰ آذر ۱۴۰۳',
-      size: '3.2 MB',
-      views: 145,
-      downloads: 28
-    }
-  ];
 
   const categories = ['همه', 'شیشه و بطری', 'پمپ و اسپری', 'درپوش', 'اسانس', 'پلمپر'];
 
-  const filteredItems = galleryItems.filter(item => {
+  const filteredItems = (gallery || []).filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'همه' || selectedCategory === 'all' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -126,7 +67,7 @@ const AdminGallery = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-bold">کل تصاویر</p>
-                <p className="text-3xl font-black text-gray-800 mt-2">{galleryItems.length}</p>
+                <p className="text-3xl font-black text-gray-800 mt-2">{gallery?.length || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Image className="w-6 h-6 text-purple-600" />
@@ -138,7 +79,7 @@ const AdminGallery = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-bold">کل بازدیدها</p>
-                <p className="text-3xl font-black text-gray-800 mt-2">{galleryItems.reduce((sum, item) => sum + item.views, 0)}</p>
+                <p className="text-3xl font-black text-gray-800 mt-2">{gallery?.reduce((sum, item) => sum + (item.views || 0), 0) || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <Eye className="w-6 h-6 text-blue-600" />
@@ -150,7 +91,7 @@ const AdminGallery = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-bold">کل دانلودها</p>
-                <p className="text-3xl font-black text-gray-800 mt-2">{galleryItems.reduce((sum, item) => sum + item.downloads, 0)}</p>
+                <p className="text-3xl font-black text-gray-800 mt-2">{gallery?.reduce((sum, item) => sum + (item.downloads || 0), 0) || 0}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <Download className="w-6 h-6 text-green-600" />
@@ -162,7 +103,7 @@ const AdminGallery = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-bold">حجم کل</p>
-                <p className="text-3xl font-black text-gray-800 mt-2">12.8</p>
+                <p className="text-3xl font-black text-gray-800 mt-2">0</p>
                 <p className="text-xs text-gray-500">مگابایت</p>
               </div>
               <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
@@ -230,6 +171,11 @@ const AdminGallery = () => {
             </h2>
           </div>
 
+          {loading ? (
+            <LoadingSpinner message="در حال بارگذاری گالری..." />
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={refetch} />
+          ) : (
           <div className={`grid gap-6 ${
             viewMode === 'grid' 
               ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
@@ -239,13 +185,10 @@ const AdminGallery = () => {
               <div key={item.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
-                    src={item.image}
+                    src={item.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'}
                     alt={item.title}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs font-bold">
-                    {item.size}
-                  </div>
                 </div>
 
                 <div className="p-4">
@@ -257,16 +200,16 @@ const AdminGallery = () => {
                   <div className="text-xs text-gray-500 space-y-1 mb-4">
                     <div className="flex items-center space-x-reverse space-x-1">
                       <Calendar className="w-3 h-3" />
-                      <span>آپلود: {item.uploadDate}</span>
+                      <span>آپلود: {new Date(item.created_at).toLocaleDateString('fa-IR')}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-reverse space-x-1">
                         <Eye className="w-3 h-3" />
-                        <span>{item.views} بازدید</span>
+                        <span>{item.views || 0} بازدید</span>
                       </div>
                       <div className="flex items-center space-x-reverse space-x-1">
                         <Download className="w-3 h-3" />
-                        <span>{item.downloads} دانلود</span>
+                        <span>{item.downloads || 0} دانلود</span>
                       </div>
                     </div>
                   </div>
@@ -274,7 +217,7 @@ const AdminGallery = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-reverse space-x-2">
                       <button 
-                        onClick={() => window.open(item.image, '_blank')}
+                        onClick={() => window.open(item.image_url, '_blank')}
                         className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                         title="مشاهده تصویر"
                       >
@@ -300,6 +243,7 @@ const AdminGallery = () => {
               </div>
             ))}
           </div>
+          )}
 
           {filteredItems.length === 0 && (
             <div className="text-center py-16">
