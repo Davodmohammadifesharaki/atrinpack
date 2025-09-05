@@ -5,20 +5,13 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useNewsItem, useNews } from '../hooks/useSupabase';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ErrorMessage from '../components/ErrorMessage';
-import { useNewsItem, useNews } from '../hooks/useSupabase';
 import { Calendar, Tag, Share2, ArrowRight } from 'lucide-react';
 
 const NewsDetail = () => {
   const { id } = useParams();
   const { news, loading, error } = useNewsItem(id || '');
   const { news: allNews } = useNews();
-  const { news, loading, error } = useNewsItem(id || '');
-  const { news: allNews } = useNews();
 
-  // اخبار مرتبط - فیلتر بر اساس دسته‌بندی مشابه
-  const relatedNews = allNews
   // اخبار مرتبط - فیلتر بر اساس دسته‌بندی مشابه
   const relatedNews = allNews
     .filter(n => n.id !== id && n.category === news?.category)
@@ -99,32 +92,6 @@ const NewsDetail = () => {
               )}
             </div>
           </div>
-          {relatedNews.length > 0 && (
-            <div className="mt-16">
-              <h2 className="text-2xl font-black text-gray-800 mb-8">اخبار مرتبط</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {relatedNews.map((relatedNewsItem) => (
-                  <div key={relatedNewsItem.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <img 
-                      src={relatedNewsItem.image_url || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=200&fit=crop'}
-                      alt={relatedNewsItem.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-6">
-                      <h3 className="text-lg font-black text-gray-800 mb-2">
-                        {relatedNewsItem.title}
-                      </h3>
-                      {relatedNewsItem.excerpt && (
-                        <p className="text-gray-600 text-sm">
-                          {relatedNewsItem.excerpt}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Article Content */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
