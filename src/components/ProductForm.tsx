@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProduct, productOperations } from '../hooks/useSupabase';
@@ -30,7 +31,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ mode, productId, onSave, onCa
     isFeatured: false,
     showInMixMatch: false,
     visible: true,
-    image: null as File | null
+    image: null as File | null,
+    images: [] as File[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,7 +56,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ mode, productId, onSave, onCa
         isFeatured: existingProduct.is_featured,
         showInMixMatch: existingProduct.show_in_mix_match,
         visible: existingProduct.visible,
-        image: null
+        image: null,
+        images: []
       });
     }
   }, [mode, existingProduct]);
@@ -116,23 +119,26 @@ const ProductForm: React.FC<ProductFormProps> = ({ mode, productId, onSave, onCa
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size <= 5 * 1024 * 1024) { // 5MB limit
-        setFormData({
-          ...formData,
-          image: file
-        });
-      } else {
-        alert('حجم فایل نباید بیشتر از ۵ مگابایت باشد!');
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024); // 5MB limit
+      
+      if (validFiles.length !== files.length) {
+        alert('برخی فایل‌ها بیشتر از ۵ مگابایت هستند و حذف شدند!');
       }
+      
+      const newImages = validFiles.slice(0, 5 - formData.images.length);
+      setFormData({
+        ...formData,
+        images: [...formData.images, ...newImages].slice(0, 5)
+      });
     }
   };
 
-  const removeImage = () => {
+  const removeImage = (index: number) => {
     setFormData({
       ...formData,
-      image: null
+      images: formData.images.filter((_, i) => i !== index)
     });
   };
 
@@ -368,12 +374,62 @@ const ProductForm: React.FC<ProductFormProps> = ({ mode, productId, onSave, onCa
                 />
                 <button
                   type="button"
-                  onClick={removeImage}
+                  onClick={() => setFormData({
+                    ...formData,
+                    image: null
+                  })}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors shadow-lg"
                   disabled={isSubmitting}
                 >
                   <X className="w-4 h-4" />
                 </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-bold mb-4">تصاویر محصول (حداکثر 5 تصویر)</label>
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors">
+            <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 mb-2">تصاویر محصول را بکشید و رها کنید</p>
+            <p className="text-sm text-gray-500 mb-4">یا کلیک کنید تا فایل انتخاب کنید (PNG/JPG، حداکثر ۵MB)</p>
+            <input 
+              type="file" 
+              accept="image/png,image/jpeg,image/jpg" 
+              multiple
+              onChange={handleImageUpload}
+              className="hidden" 
+              id="product-images-upload"
+            />
+            <label 
+              htmlFor="product-images-upload"
+              className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 cursor-pointer inline-block"
+            >
+              انتخاب تصاویر
+            </label>
+          </div>
+
+          {formData.images.length > 0 && (
+            <div className="mt-6">
+              <h4 className="text-lg font-bold text-gray-700 mb-4">تصاویر انتخاب شده:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {formData.images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={URL.createObjectURL(image)} 
+                      alt={`تصویر ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors shadow-lg"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           )}

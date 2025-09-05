@@ -4,23 +4,41 @@ import AdminLayout from '../../components/AdminLayout';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useAllNews, newsOperations } from '../../hooks/useSupabase';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import ErrorMessage from '../../components/ErrorMessage';
-import { useAllNews, newsOperations } from '../../hooks/useSupabase';
-  const handleDeleteNews = async (id: string) => {
-  Newspaper, 
-      try {
-        const { error } = await newsOperations.delete(id);
-        if (error) throw error;
-        alert('خبر با موفقیت حذف شد!');
-        refetch();
-      } catch (error) {
-        console.error('Error deleting news:', error);
-        alert('خطا در حذف خبر');
-      }
+import { 
+  Plus, 
+  Eye, 
+  Edit, 
   Trash2, 
   Search, 
   Filter,
+  Star,
+  Grid,
+  List,
+  Newspaper,
+  TrendingUp
+} from 'lucide-react';
+
+const categories = ['همه', 'اخبار عمومی', 'ورزش', 'فناوری', 'اقتصاد', 'سیاست', 'فرهنگ'];
+
+const AdminNews = () => {
+  const navigate = useNavigate();
+  const { news, loading, error, refetch } = useAllNews();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+
+  const handleDeleteNews = async (id: string) => {
+    try {
+      const { error } = await newsOperations.delete(id);
+      if (error) throw error;
+      alert('خبر با موفقیت حذف شد!');
+      refetch();
+    } catch (error) {
+      console.error('Error deleting news:', error);
+      alert('خطا در حذف خبر');
+    }
+  };
+
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
       const { error } = await newsOperations.toggleFeatured(id, !currentFeatured);
@@ -31,8 +49,8 @@ import { useAllNews, newsOperations } from '../../hooks/useSupabase';
       console.error('Error toggling featured:', error);
       alert('خطا در تغییر وضعیت ویژه');
     }
-  Star,
-  Grid,
+  };
+
   const toggleStatus = async (id: string, currentVisible: boolean) => {
     try {
       const { error } = await newsOperations.toggleVisibility(id, !currentVisible);
@@ -43,26 +61,29 @@ import { useAllNews, newsOperations } from '../../hooks/useSupabase';
       console.error('Error toggling status:', error);
       alert('خطا در تغییر وضعیت انتشار');
     }
+  };
 
-const AdminNews = () => {
-  const navigate = useNavigate();
-  const { news, loading, error, refetch } = useAllNews();
-  const { news, loading, error, refetch } = useAllNews();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const filteredNews = (news || []).filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (item.excerpt && item.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-black text-gray-800">مدیریت اخبار</h1>
+          <button 
+            onClick={() => navigate('/admin/news/add')}
+            className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center gap-2"
+          >
             <Plus className="w-5 h-5" />
             <span>افزودن خبر جدید</span>
-  const filteredNews = (news || []).filter(item => {
+          </button>
         </div>
 
-        {loading ? (
-          <LoadingSpinner message="در حال بارگذاری اخبار..." />
-        ) : error ? (
-          <ErrorMessage message={error} onRetry={refetch} />
-        ) : (
-          <>
         {loading ? (
           <LoadingSpinner message="در حال بارگذاری اخبار..." />
         ) : error ? (
@@ -204,8 +225,6 @@ const AdminNews = () => {
                           <div>
                             <div className="font-bold text-gray-800">{item.title}</div>
                             {item.excerpt && (
-                              <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
-                            )}
                               <div className="text-sm text-gray-600 line-clamp-2">{item.excerpt}</div>
                             )}
                             {item.featured && (
@@ -353,8 +372,6 @@ const AdminNews = () => {
             </div>
           )}
         </div>
-          </>
-        )}
           </>
         )}
       </div>
