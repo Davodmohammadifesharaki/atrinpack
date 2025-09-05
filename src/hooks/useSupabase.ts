@@ -601,3 +601,122 @@ export const contactOperations = {
     return { error };
   }
 };
+
+// Hook for user profiles (admin only)
+export const useUserProfiles = () => {
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'خطا در بارگذاری کاربران');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  return { users, loading, error, refetch: fetchUsers };
+};
+
+// User operations
+export const userOperations = {
+  create: async (userData: {
+    fullName: string;
+    username: string;
+    email: string;
+    password: string;
+    phone?: string;
+    company?: string;
+    role: string;
+  }) => {
+    try {
+      // First create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            full_name: userData.fullName,
+            username: userData.username
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Then create user profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('user_profiles')
+          .insert([{
+            id: authData.user.id,
+            full_name: userData.fullName,
+            username: userData.username,
+            phone: userData.phone || null,
+            company: userData.company || null,
+            role: userData.role,
+            status: 'active'
+          }])
+          .select()
+          .single();
+
+        if (profileError) throw profileError;
+        return { data: profileData, error: null };
+      }
+
+      return { data: null, error: new Error('خطا در ایجاد کاربر') };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  update: async (id: string, userData: Partial<UserProfile>) => {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update(userData)
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  delete: async (id: string) => {
+    // First delete from user_profiles
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .delete()
+      .eq('id', id);
+
+    if (profileError) return { error: profileError };
+
+    // Then delete from auth (admin only operation)
+    const { error: authError } = await supabase.auth.admin.deleteUser(id);
+    
+    return { error: authError };
+  },
+
+  toggleStatus: async (id: string, status: string) => {
+    const newStatus = status === 'active' ? 'inactive' : 'active';
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update({ status: newStatus })
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  }
+};
