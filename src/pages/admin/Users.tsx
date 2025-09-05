@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { supabase } from '../../lib/supabase';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
+import { useAllUsers, userOperations } from '../../hooks/useSupabase';
 import { 
   Users, 
   Plus, 
@@ -24,11 +23,13 @@ import {
 } from 'lucide-react';
 
 const AdminUsers = () => {
+  const { users, loading, error, refetch } = useAllUsers();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newUser, setNewUser] = useState({
     fullName: '',
     username: '',
@@ -36,7 +37,7 @@ const AdminUsers = () => {
     email: '',
     phone: '',
     company: '',
-    role: 'editor'
+    role: 'customer'
   });
   const [editUser, setEditUser] = useState({
     fullName: '',
@@ -44,53 +45,50 @@ const AdminUsers = () => {
     email: '',
     phone: '',
     company: '',
-    role: 'editor'
+    role: 'customer'
   });
 
-  // Get real users from Supabase
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setUsers(data || []);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
   const filteredUsers = users.filter(user => 
-    user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('New user added:', newUser);
-    alert('کاربر جدید با موفقیت اضافه شد!');
-    setNewUser({
-      fullName: '',
-      username: '',
-      password: '',
-      email: '',
-      phone: '',
-      company: '',
-      role: 'editor'
-    });
-    setIsAddUserModalOpen(false);
+    setIsSubmitting(true);
+    
+    try {
+      const { data, error } = await userOperations.create({
+        fullName: newUser.fullName,
+        username: newUser.username,
+        email: newUser.email,
+        password: newUser.password,
+        phone: newUser.phone,
+        company: newUser.company,
+        role: newUser.role
+      });
+
+      if (error) throw error;
+
+      alert('کاربر جدید با موفقیت اضافه شد!');
+      setNewUser({
+        fullName: '',
+        username: '',
+        password: '',
+        email: '',
+        phone: '',
+        company: '',
+        role: 'customer'
+      });
+      setIsAddUserModalOpen(false);
+      refetch(); // Refresh the users list
+    } catch (error) {
+      console.error('Error creating user:', error);
+      alert('خطا در ایجاد کاربر: ' + (error instanceof Error ? error.message : 'خطای نامشخص'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewUser = (user: any) => {
@@ -100,9 +98,9 @@ const AdminUsers = () => {
 
   const handleEditUser = (user: any) => {
     setEditUser({
-      fullName: user.fullName,
+      fullName: user.full_name,
       username: user.username,
-      email: user.email,
+      email: user.email || '',
       phone: user.phone,
       company: user.company,
       role: user.role
@@ -111,25 +109,59 @@ const AdminUsers = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('User updated:', editUser);
-    alert(`کاربر ${selectedUser.fullName} با موفقیت ویرایش شد!`);
-    setIsEditModalOpen(false);
-    setSelectedUser(null);
-  };
+    setIsSubmitting(true);
+    
+    try {
+      const { data, error } = await userOperations.update(selectedUser.id, {
+        full_name: editUser.fullName,
+        username: editUser.username,
+        phone: editUser.phone,
+        company: editUser.company,
+        role: editUser.role
+      });
 
-  const handleDeleteUser = (user: any) => {
-    if (confirm(`آیا از حذف کاربر ${user.full_name} اطمینان دارید؟`)) {
-      console.log('User deleted:', user.id);
-      alert(`کاربر ${user.full_name} با موفقیت حذف شد!`);
+      if (error) throw error;
+
+      alert(`کاربر ${selectedUser.full_name} با موفقیت ویرایش شد!`);
+      setIsEditModalOpen(false);
+      setSelectedUser(null);
+      refetch(); // Refresh the users list
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('خطا در ویرایش کاربر: ' + (error instanceof Error ? error.message : 'خطای نامشخص'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const toggleUserStatus = (user: any) => {
-    const newStatus = user.status === 'active' ? 'inactive' : 'active';
-    console.log(`User ${user.id} status changed to:`, newStatus);
-    alert(`وضعیت کاربر ${user.full_name} تغییر کرد!`);
+  const handleDeleteUser = async (user: any) => {
+    if (!confirm(`آیا از حذف کاربر ${user.full_name} اطمینان دارید؟`)) return;
+    
+    try {
+      const { error } = await userOperations.delete(user.id);
+      if (error) throw error;
+      
+      alert(`کاربر ${user.full_name} با موفقیت حذف شد!`);
+      refetch(); // Refresh the users list
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('خطا در حذف کاربر: ' + (error instanceof Error ? error.message : 'خطای نامشخص'));
+    }
+  };
+
+  const toggleUserStatus = async (user: any) => {
+    try {
+      const { data, error } = await userOperations.toggleStatus(user.id, user.status);
+      if (error) throw error;
+      
+      alert(`وضعیت کاربر ${user.full_name} تغییر کرد!`);
+      refetch(); // Refresh the users list
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      alert('خطا در تغییر وضعیت کاربر: ' + (error instanceof Error ? error.message : 'خطای نامشخص'));
+    }
   };
 
   const getRoleLabel = (role: string) => {
@@ -137,6 +169,7 @@ const AdminUsers = () => {
       case 'admin': return 'مدیر کل';
       case 'editor': return 'ویرایشگر';
       case 'viewer': return 'نمایشگر';
+      case 'customer': return 'مشتری';
       default: return 'کاربر';
     }
   };
@@ -146,6 +179,7 @@ const AdminUsers = () => {
       case 'admin': return 'bg-red-100 text-red-700';
       case 'editor': return 'bg-blue-100 text-blue-700';
       case 'viewer': return 'bg-green-100 text-green-700';
+      case 'customer': return 'bg-purple-100 text-purple-700';
       default: return 'bg-gray-100 text-gray-700';
     }
   };
@@ -192,6 +226,8 @@ const AdminUsers = () => {
 
           {loading ? (
             <LoadingSpinner message="در حال بارگذاری کاربران..." />
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={refetch} />
           ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -221,18 +257,24 @@ const AdminUsers = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="space-y-1">
-                        <div className="text-sm text-gray-800 flex items-center">
-                          <Mail className="w-4 h-4 ml-1 text-gray-400" />
-                          {user.email}
-                        </div>
-                        <div className="text-sm text-gray-600 flex items-center">
-                          <Phone className="w-4 h-4 ml-1 text-gray-400" />
-                          {user.phone}
-                        </div>
-                        <div className="text-sm text-gray-600 flex items-center">
-                          <Building className="w-4 h-4 ml-1 text-gray-400" />
-                          {user.company}
-                        </div>
+                        {user.email && (
+                          <div className="text-sm text-gray-800 flex items-center">
+                            <Mail className="w-4 h-4 ml-1 text-gray-400" />
+                            {user.email}
+                          </div>
+                        )}
+                        {user.phone && (
+                          <div className="text-sm text-gray-600 flex items-center">
+                            <Phone className="w-4 h-4 ml-1 text-gray-400" />
+                            {user.phone}
+                          </div>
+                        )}
+                        {user.company && (
+                          <div className="text-sm text-gray-600 flex items-center">
+                            <Building className="w-4 h-4 ml-1 text-gray-400" />
+                            {user.company}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -275,13 +317,13 @@ const AdminUsers = () => {
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                          <button 
-                            onClick={() => handleDeleteUser(user)}
-                            className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                            title="حذف کاربر"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        <button 
+                          onClick={() => handleDeleteUser(user)}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                          title="حذف کاربر"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -295,7 +337,13 @@ const AdminUsers = () => {
             <div className="text-center py-16">
               <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-600 mb-2">کاربری یافت نشد</h3>
-              <p className="text-gray-500">لطفاً عبارت جستجو را تغییر دهید</p>
+              <p className="text-gray-500 mb-4">لطفاً عبارت جستجو را تغییر دهید یا کاربر جدید اضافه کنید</p>
+              <button 
+                onClick={() => setIsAddUserModalOpen(true)}
+                className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300"
+              >
+                افزودن اولین کاربر
+              </button>
             </div>
           )}
         </div>
@@ -324,6 +372,7 @@ const AdminUsers = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="نام کامل"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -336,6 +385,7 @@ const AdminUsers = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="نام کاربری"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -348,6 +398,7 @@ const AdminUsers = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="رمز عبور"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -360,6 +411,7 @@ const AdminUsers = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="ایمیل"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -371,6 +423,7 @@ const AdminUsers = () => {
                     onChange={(e) => setNewUser({...newUser, phone: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="09123456789"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -382,6 +435,7 @@ const AdminUsers = () => {
                     onChange={(e) => setNewUser({...newUser, company: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="نام شرکت"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -391,23 +445,28 @@ const AdminUsers = () => {
                     value={newUser.role}
                     onChange={(e) => setNewUser({...newUser, role: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={isSubmitting}
                   >
+                    <option value="customer">مشتری</option>
                     <option value="editor">ویرایشگر</option>
                     <option value="viewer">نمایشگر</option>
+                    <option value="admin">مدیر کل</option>
                   </select>
                 </div>
 
                 <div className="flex gap-4 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300"
+                    className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
                   >
-                    افزودن کاربر
+                    {isSubmitting ? 'در حال افزودن...' : 'افزودن کاربر'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsAddUserModalOpen(false)}
                     className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-400 transition-colors duration-300"
+                    disabled={isSubmitting}
                   >
                     انصراف
                   </button>
@@ -435,7 +494,7 @@ const AdminUsers = () => {
                 <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <User className="w-12 h-12 text-blue-600" />
                 </div>
-                <h4 className="text-xl font-black text-gray-800">{selectedUser.fullName}</h4>
+                <h4 className="text-xl font-black text-gray-800">{selectedUser.full_name}</h4>
                 <p className="text-gray-600">@{selectedUser.username}</p>
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold mt-2 ${getRoleColor(selectedUser.role)}`}>
                   {getRoleLabel(selectedUser.role)}
@@ -443,35 +502,41 @@ const AdminUsers = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Mail className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm text-gray-600">ایمیل</div>
-                    <div className="font-bold text-gray-800">{selectedUser.email}</div>
+                {selectedUser.email && (
+                  <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <Mail className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <div className="text-sm text-gray-600">ایمیل</div>
+                      <div className="font-bold text-gray-800">{selectedUser.email}</div>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Phone className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm text-gray-600">تلفن</div>
-                    <div className="font-bold text-gray-800">{selectedUser.phone}</div>
+                {selectedUser.phone && (
+                  <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <Phone className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <div className="text-sm text-gray-600">تلفن</div>
+                      <div className="font-bold text-gray-800">{selectedUser.phone}</div>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Building className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm text-gray-600">شرکت</div>
-                    <div className="font-bold text-gray-800">{selectedUser.company}</div>
+                {selectedUser.company && (
+                  <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <Building className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <div className="text-sm text-gray-600">شرکت</div>
+                      <div className="font-bold text-gray-800">{selectedUser.company}</div>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="flex items-center space-x-reverse space-x-3 p-3 bg-gray-50 rounded-lg">
                   <Calendar className="w-5 h-5 text-gray-400" />
                   <div>
                     <div className="text-sm text-gray-600">تاریخ عضویت</div>
-                    <div className="font-bold text-gray-800">{selectedUser.joinDate}</div>
+                    <div className="font-bold text-gray-800">{new Date(selectedUser.created_at).toLocaleDateString('fa-IR')}</div>
                   </div>
                 </div>
 
@@ -479,7 +544,7 @@ const AdminUsers = () => {
                   <Shield className="w-5 h-5 text-gray-400" />
                   <div>
                     <div className="text-sm text-gray-600">آخرین ورود</div>
-                    <div className="font-bold text-gray-800">{selectedUser.lastLogin}</div>
+                    <div className="font-bold text-gray-800">{selectedUser.last_login ? new Date(selectedUser.last_login).toLocaleDateString('fa-IR') : 'هرگز'}</div>
                   </div>
                 </div>
               </div>
@@ -529,6 +594,7 @@ const AdminUsers = () => {
                     onChange={(e) => setEditUser({...editUser, fullName: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -539,12 +605,9 @@ const AdminUsers = () => {
                     value={editUser.username}
                     onChange={(e) => setEditUser({...editUser, username: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                    disabled={selectedUser.username === 'aminjafari'}
                     required
+                    disabled={isSubmitting}
                   />
-                  {selectedUser.username === 'aminjafari' && (
-                    <p className="text-xs text-amber-600 mt-1">نام کاربری ادمین اصلی قابل تغییر نیست</p>
-                  )}
                 </div>
 
                 <div>
@@ -555,6 +618,7 @@ const AdminUsers = () => {
                     onChange={(e) => setEditUser({...editUser, email: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -566,6 +630,7 @@ const AdminUsers = () => {
                     onChange={(e) => setEditUser({...editUser, phone: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="09123456789"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -577,6 +642,7 @@ const AdminUsers = () => {
                     onChange={(e) => setEditUser({...editUser, company: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="نام شرکت"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -586,29 +652,38 @@ const AdminUsers = () => {
                     value={editUser.role}
                     onChange={(e) => setEditUser({...editUser, role: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                    disabled={selectedUser.username === 'aminjafari'}
+                    disabled={isSubmitting}
                   >
-                    <option value="admin">مدیر کل</option>
+                    <option value="customer">مشتری</option>
                     <option value="editor">ویرایشگر</option>
                     <option value="viewer">نمایشگر</option>
+                    <option value="admin">مدیر کل</option>
                   </select>
-                  {selectedUser.username === 'aminjafari' && (
-                    <p className="text-xs text-amber-600 mt-1">نقش ادمین اصلی قابل تغییر نیست</p>
-                  )}
                 </div>
 
                 <div className="flex gap-4 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                    className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
                   >
-                    <Save className="w-4 h-4" />
-                    <span>ذخیره تغییرات</span>
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>در حال ذخیره...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        <span>ذخیره تغییرات</span>
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(false)}
                     className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-400 transition-colors duration-300"
+                    disabled={isSubmitting}
                   >
                     انصراف
                   </button>

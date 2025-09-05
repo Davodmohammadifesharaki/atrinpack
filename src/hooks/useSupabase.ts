@@ -603,7 +603,7 @@ export const contactOperations = {
 };
 
 // Hook for user profiles (admin only)
-export const useUserProfiles = () => {
+export const useAllUsers = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -695,18 +695,12 @@ export const userOperations = {
   },
 
   delete: async (id: string) => {
-    // First delete from user_profiles
-    const { error: profileError } = await supabase
+    // Delete from user_profiles (auth user will be handled by trigger)
+    const { error } = await supabase
       .from('user_profiles')
       .delete()
       .eq('id', id);
-
-    if (profileError) return { error: profileError };
-
-    // Then delete from auth (admin only operation)
-    const { error: authError } = await supabase.auth.admin.deleteUser(id);
-    
-    return { error: authError };
+    return { error };
   },
 
   toggleStatus: async (id: string, status: string) => {
