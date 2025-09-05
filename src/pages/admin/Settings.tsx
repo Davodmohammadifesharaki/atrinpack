@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
+import { useSettings, settingsOperations } from '../../hooks/useSupabase';
 import { 
   Settings, 
   Save, 
@@ -9,25 +10,70 @@ import {
   Globe,
   Shield,
   Database,
-  Clock
+  Clock,
+  Search,
+  Image as ImageIcon,
+  Link as LinkIcon
 } from 'lucide-react';
 
 const AdminSettings = () => {
-  const [activeTab, setActiveTab] = useState('content');
-  const [settings, setSettings] = useState({
-    aboutText: 'آترین پک با بیش از ۱۵ سال تجربه در صنعت بسته‌بندی لوکس...',
-    siteTitle: 'آترین پک - بسته‌بندی لوکس',
-    siteDescription: 'تولیدکننده انواع شیشه‌های عطر، پمپ‌های اسپری و درپوش‌های هنری',
-    keywords: 'شیشه عطر, پمپ اسپری, درپوش, اسانس, بسته‌بندی لوکس'
+  const { settings: seoSettings, loading: seoLoading, refetch: refetchSeo } = useSettings('seo_settings');
+  const [activeTab, setActiveTab] = useState('seo');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [seoData, setSeoData] = useState({
+    siteTitle: '',
+    siteDescription: '',
+    keywords: '',
+    ogImage: '',
+    twitterCard: 'summary_large_image',
+    robotsTxt: '',
+    sitemapUrl: '',
+    googleAnalyticsId: '',
+    googleSearchConsoleId: '',
+    facebookPixelId: '',
+    canonicalUrl: '',
+    alternateLanguages: '',
+    structuredData: ''
   });
 
-  const handleSave = () => {
-    console.log('Settings saved:', settings);
-    alert('تنظیمات با موفقیت ذخیره شد!');
+  useEffect(() => {
+    if (seoSettings && Object.keys(seoSettings).length > 0) {
+      setSeoData({
+        siteTitle: seoSettings.siteTitle || '',
+        siteDescription: seoSettings.siteDescription || '',
+        keywords: seoSettings.keywords || '',
+        ogImage: seoSettings.ogImage || '',
+        twitterCard: seoSettings.twitterCard || 'summary_large_image',
+        robotsTxt: seoSettings.robotsTxt || '',
+        sitemapUrl: seoSettings.sitemapUrl || '',
+        googleAnalyticsId: seoSettings.googleAnalyticsId || '',
+        googleSearchConsoleId: seoSettings.googleSearchConsoleId || '',
+        facebookPixelId: seoSettings.facebookPixelId || '',
+        canonicalUrl: seoSettings.canonicalUrl || '',
+        alternateLanguages: seoSettings.alternateLanguages || '',
+        structuredData: seoSettings.structuredData || ''
+      });
+    }
+  }, [seoSettings]);
+
+  const handleSaveSeo = async () => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await settingsOperations.set('seo_settings', seoData);
+      if (error) throw error;
+
+      alert('تنظیمات سئو با موفقیت ذخیره شد!');
+      refetchSeo();
+    } catch (error) {
+      console.error('Error saving SEO settings:', error);
+      alert('خطا در ذخیره تنظیمات سئو');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const tabs = [
-    { id: 'content', label: 'محتوای صفحات', icon: FileText },
     { id: 'seo', label: 'تنظیمات سئو', icon: Globe },
     { id: 'security', label: 'امنیت', icon: Shield },
     { id: 'backup', label: 'بک‌آپ', icon: Database }
@@ -42,13 +88,16 @@ const AdminSettings = () => {
             <h1 className="text-3xl font-black text-gray-800">تنظیمات سایت</h1>
             <p className="text-gray-600 mt-2">مدیریت تنظیمات کلی سایت</p>
           </div>
-          <button 
-            onClick={handleSave}
-            className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2"
-          >
-            <Save className="w-5 h-5" />
-            <span>ذخیره تغییرات</span>
-          </button>
+          {activeTab === 'seo' && (
+            <button 
+              onClick={handleSaveSeo}
+              disabled={isSubmitting}
+              className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2 disabled:opacity-50"
+            >
+              <Save className="w-5 h-5" />
+              <span>{isSubmitting ? 'در حال ذخیره...' : 'ذخیره تغییرات'}</span>
+            </button>
+          )}
         </div>
 
         {/* Tabs */}
@@ -73,68 +122,192 @@ const AdminSettings = () => {
           </div>
 
           <div className="p-6">
-            {/* Content Tab */}
-            {activeTab === 'content' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-gray-700 font-bold mb-2">متن درباره ما</label>
-                  <textarea
-                    value={settings.aboutText}
-                    onChange={(e) => setSettings({...settings, aboutText: e.target.value})}
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-bold mb-2">آپلود کاتالوگ (PDF)</label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
-                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">فایل PDF کاتالوگ را بکشید و رها کنید</p>
-                    <input type="file" accept=".pdf" className="hidden" id="catalog-upload" />
-                    <label 
-                      htmlFor="catalog-upload"
-                      className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 cursor-pointer inline-block"
-                    >
-                      انتخاب فایل
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* SEO Tab */}
             {activeTab === 'seo' && (
-              <div className="space-y-6">
+              <div className="space-y-8">
+                {/* Basic SEO */}
                 <div>
-                  <label className="block text-gray-700 font-bold mb-2">عنوان سایت</label>
-                  <input
-                    type="text"
-                    value={settings.siteTitle}
-                    onChange={(e) => setSettings({...settings, siteTitle: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center">
+                    <Search className="w-6 h-6 ml-2 text-blue-500" />
+                    تنظیمات پایه سئو
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">عنوان سایت</label>
+                      <input
+                        type="text"
+                        value={seoData.siteTitle}
+                        onChange={(e) => setSeoData({...seoData, siteTitle: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="عنوان اصلی سایت"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">حداکثر ۶۰ کاراکتر</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">URL کانونیکال</label>
+                      <input
+                        type="url"
+                        value={seoData.canonicalUrl}
+                        onChange={(e) => setSeoData({...seoData, canonicalUrl: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="https://example.com"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">توضیحات سایت</label>
+                      <textarea
+                        value={seoData.siteDescription}
+                        onChange={(e) => setSeoData({...seoData, siteDescription: e.target.value})}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        placeholder="توضیحات کوتاه و جذاب از سایت"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">حداکثر ۱۶۰ کاراکتر</p>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">کلمات کلیدی</label>
+                      <input
+                        type="text"
+                        value={seoData.keywords}
+                        onChange={(e) => setSeoData({...seoData, keywords: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="کلمات را با کاما جدا کنید"
+                      />
+                    </div>
+                  </div>
                 </div>
 
+                {/* Social Media SEO */}
                 <div>
-                  <label className="block text-gray-700 font-bold mb-2">توضیحات سایت</label>
-                  <textarea
-                    value={settings.siteDescription}
-                    onChange={(e) => setSettings({...settings, siteDescription: e.target.value})}
-                    rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  />
+                  <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center">
+                    <ImageIcon className="w-6 h-6 ml-2 text-green-500" />
+                    تنظیمات شبکه‌های اجتماعی
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">تصویر Open Graph</label>
+                      <input
+                        type="url"
+                        value={seoData.ogImage}
+                        onChange={(e) => setSeoData({...seoData, ogImage: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="URL تصویر برای شبکه‌های اجتماعی"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">ابعاد توصیه شده: ۱۲۰۰×۶۳۰ پیکسل</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">نوع کارت توییتر</label>
+                      <select
+                        value={seoData.twitterCard}
+                        onChange={(e) => setSeoData({...seoData, twitterCard: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="summary">خلاصه</option>
+                        <option value="summary_large_image">خلاصه با تصویر بزرگ</option>
+                        <option value="app">اپلیکیشن</option>
+                        <option value="player">پلیر</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Technical SEO */}
                 <div>
-                  <label className="block text-gray-700 font-bold mb-2">کلمات کلیدی</label>
-                  <input
-                    type="text"
-                    value={settings.keywords}
-                    onChange={(e) => setSettings({...settings, keywords: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="کلمات را با کاما جدا کنید"
-                  />
+                  <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center">
+                    <LinkIcon className="w-6 h-6 ml-2 text-purple-500" />
+                    تنظیمات فنی سئو
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">URL نقشه سایت</label>
+                      <input
+                        type="url"
+                        value={seoData.sitemapUrl}
+                        onChange={(e) => setSeoData({...seoData, sitemapUrl: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="https://example.com/sitemap.xml"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">زبان‌های جایگزین</label>
+                      <input
+                        type="text"
+                        value={seoData.alternateLanguages}
+                        onChange={(e) => setSeoData({...seoData, alternateLanguages: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="en,ar,tr"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">محتوای robots.txt</label>
+                      <textarea
+                        value={seoData.robotsTxt}
+                        onChange={(e) => setSeoData({...seoData, robotsTxt: e.target.value})}
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+                        placeholder="User-agent: *&#10;Allow: /"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">داده‌های ساختاریافته (JSON-LD)</label>
+                      <textarea
+                        value={seoData.structuredData}
+                        onChange={(e) => setSeoData({...seoData, structuredData: e.target.value})}
+                        rows={6}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+                        placeholder='{"@context": "https://schema.org", "@type": "Organization", ...}'
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Analytics & Tracking */}
+                <div>
+                  <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center">
+                    <Database className="w-6 h-6 ml-2 text-amber-500" />
+                    آنالیتیکس و ردیابی
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">Google Analytics ID</label>
+                      <input
+                        type="text"
+                        value={seoData.googleAnalyticsId}
+                        onChange={(e) => setSeoData({...seoData, googleAnalyticsId: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="G-XXXXXXXXXX"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">Google Search Console</label>
+                      <input
+                        type="text"
+                        value={seoData.googleSearchConsoleId}
+                        onChange={(e) => setSeoData({...seoData, googleSearchConsoleId: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="کد تأیید"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-2">Facebook Pixel ID</label>
+                      <input
+                        type="text"
+                        value={seoData.facebookPixelId}
+                        onChange={(e) => setSeoData({...seoData, facebookPixelId: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="123456789"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -193,48 +366,6 @@ const AdminSettings = () => {
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <span className="text-gray-700">ورود همزمان چندگانه</span>
                         <input type="checkbox" className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                      <Globe className="w-5 h-5 ml-2 text-green-500" />
-                      تنظیمات IP
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-gray-700 font-bold mb-2">IP های مجاز</label>
-                        <textarea
-                          placeholder="192.168.1.1&#10;10.0.0.1"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none"
-                          rows={3}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-700">محدودیت IP فعال</span>
-                        <input type="checkbox" className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                      <Database className="w-5 h-5 ml-2 text-purple-500" />
-                      لاگ امنیتی
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="text-sm text-red-800 font-bold">تلاش ورود ناموفق</div>
-                        <div className="text-xs text-red-600">IP: 192.168.1.100 - ۱۰ دقیقه پیش</div>
-                      </div>
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="text-sm text-green-800 font-bold">ورود موفق</div>
-                        <div className="text-xs text-green-600">امین جعفری - ۱ ساعت پیش</div>
-                      </div>
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="text-sm text-blue-800 font-bold">تغییر رمز عبور</div>
-                        <div className="text-xs text-blue-600">امین جعفری - ۲ روز پیش</div>
                       </div>
                     </div>
                   </div>
