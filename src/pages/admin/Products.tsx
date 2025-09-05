@@ -19,8 +19,7 @@ import {
   TrendingUp,
   ShoppingCart
 } from 'lucide-react';
-import { useAllProducts } from '../../hooks/useProducts';
-import { productOperations } from '../../services/productService';
+import { useAllProducts, productOperations } from '../../hooks/useSupabase';
 
 const AdminProducts = () => {
   const navigate = useNavigate();
