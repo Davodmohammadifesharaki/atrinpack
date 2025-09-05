@@ -90,6 +90,14 @@ export interface UserProfile {
   updated_at?: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+  created_at?: string;
+}
+
 export interface Settings {
   id: string;
   key: string;

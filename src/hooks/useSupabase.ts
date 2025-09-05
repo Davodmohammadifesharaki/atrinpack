@@ -632,85 +632,36 @@ export const useAllUsers = () => {
   return { users, loading, error, refetch: fetchUsers };
 };
 
-// User operations
-export const userOperations = {
-  create: async (userData: {
-    fullName: string;
-    username: string;
-    email: string;
-    password: string;
-    phone?: string;
-    company?: string;
-    role: string;
-  }) => {
+// Hook for settings
+export const useSettings = (key?: string) => {
+  const [settings, setSettings] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSettings = async () => {
     try {
-      // First create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-        options: {
-          data: {
-            full_name: userData.fullName,
-            username: userData.username
-          }
-        }
-      });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        // Then create user profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('user_profiles')
-          .insert([{
-            id: authData.user.id,
-            full_name: userData.fullName,
-            username: userData.username,
-            phone: userData.phone || null,
-            company: userData.company || null,
-            role: userData.role,
-            status: 'active'
-          }])
-          .select()
-          .single();
-
-        if (profileError) throw profileError;
-        return { data: profileData, error: null };
+      setLoading(true);
+      let query = supabase.from('settings').select('*');
+      
+      if (key) {
+        query = query.eq('key', key);
+        const { data, error } = await query.single();
+        if (error) throw error;
+        setSettings(data ? JSON.parse(data.value || '{}') : {});
+      } else {
+        const { data, error } = await query;
+        if (error) throw error;
+        const settingsObj = {};
+        data?.forEach(setting => {
+          settingsObj[setting.key] = JSON.parse(setting.value || '{}');
+        });
+        setSettings(settingsObj);
       }
-
-      return { data: null, error: new Error('خطا در ایجاد کاربر') };
-    } catch (error) {
-      return { data: null, error };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'خطا در بارگذاری تنظیمات');
+    } finally {
+      setLoading(false);
     }
-  },
+  };
 
-  update: async (id: string, userData: Partial<UserProfile>) => {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .update(userData)
-      .eq('id', id)
-      .select()
-      .single();
-    return { data, error };
-  },
-
-  delete: async (id: string) => {
-    // Delete from user_profiles (auth user will be handled by trigger)
-    const { error } = await supabase
-      .from('user_profiles')
-      .delete()
-      .eq('id', id);
-    return { error };
-  },
-
-  toggleStatus: async (id: string, status: string) => {
-    const newStatus = status === 'active' ? 'inactive' : 'active';
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .update({ status: newStatus })
-      .eq('id', id)
-      .select()
-      .single();
-    return { data, error };
-  }
-};
+  useEffect
