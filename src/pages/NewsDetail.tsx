@@ -66,6 +66,39 @@ const NewsDetail = () => {
             <img 
               src={news.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop'}
               alt={news.title}
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-8">
+              <h1 className="text-3xl font-black text-gray-800 mb-4">
+                {news.title}
+              </h1>
+              
+              <div className="flex items-center space-x-reverse space-x-6 text-gray-600 mb-6">
+                <div className="flex items-center space-x-reverse space-x-2">
+                  <Calendar className="w-5 h-5" />
+                  <span>{new Date(news.created_at).toLocaleDateString('fa-IR')}</span>
+                </div>
+                
+                {news.category && (
+                  <div className="flex items-center space-x-reverse space-x-2">
+                    <Tag className="w-5 h-5" />
+                    <span>{news.category}</span>
+                  </div>
+                )}
+                
+                <button className="flex items-center space-x-reverse space-x-2 hover:text-blue-600 transition-colors">
+                  <Share2 className="w-5 h-5" />
+                  <span>اشتراک‌گذاری</span>
+                </button>
+              </div>
+              
+              {news.excerpt && (
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  {news.excerpt}
+                </p>
+              )}
+            </div>
+          </div>
           {relatedNews.length > 0 && (
             <div className="mt-16">
               <h2 className="text-2xl font-black text-gray-800 mb-8">اخبار مرتبط</h2>
