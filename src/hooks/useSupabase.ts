@@ -664,5 +664,124 @@ export const useSettings = (key?: string) => {
     }
   };
 
-  useEffect
-}
+  useEffect(() => {
+    fetchSettings();
+  }, [key]);
+
+  return { settings, loading, error, refetch: fetchSettings };
+};
+
+// Settings operations
+export const settingsOperations = {
+  get: async (key: string) => {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', key)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') throw error;
+    return { data: data ? JSON.parse(data.value || '{}') : null, error };
+  },
+
+  set: async (key: string, value: any) => {
+    const stringValue = JSON.stringify(value);
+    
+    // Check if setting exists
+    const { data: existing } = await supabase
+      .from('settings')
+      .select('id')
+      .eq('key', key)
+      .single();
+
+    if (existing) {
+      // Update existing setting
+      const { data, error } = await supabase
+        .from('settings')
+        .update({ value: stringValue })
+        .eq('key', key)
+        .select()
+        .single();
+      return { data, error };
+    } else {
+      // Insert new setting
+      const { data, error } = await supabase
+        .from('settings')
+        .insert([{ key, value: stringValue }])
+        .select()
+        .single();
+      return { data, error };
+    }
+  },
+
+  delete: async (key: string) => {
+    const { error } = await supabase
+      .from('settings')
+      .delete()
+      .eq('key', key);
+    return { error };
+  }
+};
+
+// Categories operations
+export const categoriesOperations = {
+  create: async (categoryData: { name: string; type: string; description?: string }) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([categoryData])
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  update: async (id: string, categoryData: Partial<{ name: string; type: string; description: string }>) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .update(categoryData)
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  delete: async (id: string) => {
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
+    return { error };
+  }
+};
+
+// Hook for categories
+export const useCategories = (type?: string) => {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      let query = supabase.from('categories').select('*');
+      
+      if (type) {
+        query = query.eq('type', type);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'خطا در بارگذاری دسته‌بندی‌ها');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [type]);
+
+  return { categories, loading, error, refetch: fetchCategories };
+};
