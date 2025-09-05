@@ -54,6 +54,7 @@ const NewsForm: React.FC<NewsFormProps> = ({ mode, newsId, onSave, onCancel }) =
         category: formData.category,
         content: formData.content,
         excerpt: formData.excerpt || null,
+          }
     }
     
     alert(mode === 'add' ? 'خبر با موفقیت اضافه شد!' : 'خبر با موفقیت ویرایش شد!');
