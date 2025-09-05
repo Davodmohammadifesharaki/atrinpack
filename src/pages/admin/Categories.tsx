@@ -1,59 +1,109 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useCategories, categoryOperations } from '../../hooks/useSupabase';
 import { 
   Tags, 
   Plus, 
   Edit, 
   Trash2, 
   Save,
-  X
+  X,
+  Package,
+  Newspaper
 } from 'lucide-react';
 
 const AdminCategories = () => {
+  const { categories, loading, error, refetch } = useCategories();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: '',
     type: 'product',
     description: ''
   });
 
-  // دسته‌بندی‌های موجود
-  const categories = [
-    { id: 1, name: 'شیشه و بطری', type: 'product', description: 'انواع شیشه‌ها و بطری‌های عطر', count: 45 },
-    { id: 2, name: 'پمپ و اسپری', type: 'product', description: 'پمپ‌های اسپری و مه‌پاش', count: 32 },
-    { id: 3, name: 'درپوش', type: 'product', description: 'انواع درپوش‌های هنری', count: 28 },
-    { id: 4, name: 'اسانس', type: 'product', description: 'اسانس‌های طبیعی و مصنوعی', count: 15 },
-    { id: 5, name: 'پلمپر', type: 'product', description: 'دستگاه‌های پلمپر', count: 8 },
-    { id: 6, name: 'اخبار تولید', type: 'news', description: 'اخبار مربوط به تولید', count: 12 },
-    { id: 7, name: 'گواهینامه‌ها', type: 'news', description: 'اخبار گواهینامه‌ها', count: 5 },
-    { id: 8, name: 'نمایشگاه‌ها', type: 'news', description: 'اخبار نمایشگاه‌ها', count: 8 }
-  ];
+  const productCategories = categories.filter(cat => cat.type === 'product');
+  const newsCategories = categories.filter(cat => cat.type === 'news');
 
-  const handleAddCategory = (e: React.FormEvent) => {
+  const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('New category added:', newCategory);
-    alert('دسته‌بندی جدید با موفقیت اضافه شد!');
-    setNewCategory({ name: '', type: 'product', description: '' });
-    setIsAddModalOpen(false);
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await categoryOperations.create(newCategory);
+      if (error) throw error;
+
+      alert('دسته‌بندی جدید با موفقیت اضافه شد!');
+      setNewCategory({ name: '', type: 'product', description: '' });
+      setIsAddModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error adding category:', error);
+      alert('خطا در افزودن دسته‌بندی');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEditCategory = (category: any) => {
-    setEditingCategory(category);
+    setEditingCategory({ ...category });
   };
 
-  const handleSaveEdit = () => {
-    console.log('Category updated:', editingCategory);
-    alert('دسته‌بندی با موفقیت بروزرسانی شد!');
-    setEditingCategory(null);
-  };
+  const handleSaveEdit = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await categoryOperations.update(editingCategory.id, {
+        name: editingCategory.name,
+        description: editingCategory.description
+      });
+      
+      if (error) throw error;
 
-  const handleDeleteCategory = (id: number) => {
-    if (confirm('آیا از حذف این دسته‌بندی اطمینان دارید؟')) {
-      console.log('Category deleted:', id);
-      alert('دسته‌بندی با موفقیت حذف شد!');
+      alert('دسته‌بندی با موفقیت بروزرسانی شد!');
+      setEditingCategory(null);
+      refetch();
+    } catch (error) {
+      console.error('Error updating category:', error);
+      alert('خطا در بروزرسانی دسته‌بندی');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleDeleteCategory = async (id: string, name: string) => {
+    if (!confirm(`آیا از حذف دسته‌بندی "${name}" اطمینان دارید؟`)) return;
+    
+    try {
+      const { error } = await categoryOperations.delete(id);
+      if (error) throw error;
+
+      alert('دسته‌بندی با موفقیت حذف شد!');
+      refetch();
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('خطا در حذف دسته‌بندی');
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <LoadingSpinner message="در حال بارگذاری دسته‌بندی‌ها..." />
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <ErrorMessage message={error} onRetry={refetch} />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -78,12 +128,12 @@ const AdminCategories = () => {
           {/* Product Categories */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-black text-gray-800 mb-6 flex items-center">
-              <Tags className="w-6 h-6 ml-2 text-blue-500" />
-              دسته‌بندی محصولات
+              <Package className="w-6 h-6 ml-2 text-blue-500" />
+              دسته‌بندی محصولات ({productCategories.length})
             </h2>
             
             <div className="space-y-4">
-              {categories.filter(cat => cat.type === 'product').map((category) => (
+              {productCategories.map((category) => (
                 <div key={category.id} className="border border-gray-200 rounded-xl p-4">
                   {editingCategory?.id === category.id ? (
                     <div className="space-y-3">
@@ -92,23 +142,27 @@ const AdminCategories = () => {
                         value={editingCategory.name}
                         onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
                       />
                       <textarea
-                        value={editingCategory.description}
+                        value={editingCategory.description || ''}
                         onChange={(e) => setEditingCategory({...editingCategory, description: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                         rows={2}
+                        disabled={isSubmitting}
                       />
                       <div className="flex gap-2">
                         <button
                           onClick={handleSaveEdit}
-                          className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-600 transition-colors flex items-center space-x-reverse space-x-1"
+                          disabled={isSubmitting}
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-600 transition-colors flex items-center space-x-reverse space-x-1 disabled:opacity-50"
                         >
                           <Save className="w-4 h-4" />
-                          <span>ذخیره</span>
+                          <span>{isSubmitting ? 'ذخیره...' : 'ذخیره'}</span>
                         </button>
                         <button
                           onClick={() => setEditingCategory(null)}
+                          disabled={isSubmitting}
                           className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-400 transition-colors flex items-center space-x-reverse space-x-1"
                         >
                           <X className="w-4 h-4" />
@@ -120,8 +174,9 @@ const AdminCategories = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-bold text-gray-800">{category.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{category.description}</p>
-                        <span className="text-xs text-blue-600 font-bold">{category.count} محصول</span>
+                        {category.description && (
+                          <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+                        )}
                       </div>
                       <div className="flex items-center space-x-reverse space-x-2">
                         <button 
@@ -131,7 +186,7 @@ const AdminCategories = () => {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => handleDeleteCategory(category.id)}
+                          onClick={() => handleDeleteCategory(category.id, category.name)}
                           className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -141,36 +196,94 @@ const AdminCategories = () => {
                   )}
                 </div>
               ))}
+              
+              {productCategories.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p>هیچ دسته‌بندی محصولی موجود نیست</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* News Categories */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-black text-gray-800 mb-6 flex items-center">
-              <Tags className="w-6 h-6 ml-2 text-green-500" />
-              دسته‌بندی اخبار
+              <Newspaper className="w-6 h-6 ml-2 text-green-500" />
+              دسته‌بندی اخبار ({newsCategories.length})
             </h2>
             
             <div className="space-y-4">
-              {categories.filter(cat => cat.type === 'news').map((category) => (
+              {newsCategories.map((category) => (
                 <div key={category.id} className="border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-800">{category.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{category.description}</p>
-                      <span className="text-xs text-green-600 font-bold">{category.count} خبر</span>
+                  {editingCategory?.id === category.id ? (
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={editingCategory.name}
+                        onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
+                      />
+                      <textarea
+                        value={editingCategory.description || ''}
+                        onChange={(e) => setEditingCategory({...editingCategory, description: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        rows={2}
+                        disabled={isSubmitting}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={isSubmitting}
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-600 transition-colors flex items-center space-x-reverse space-x-1 disabled:opacity-50"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span>{isSubmitting ? 'ذخیره...' : 'ذخیره'}</span>
+                        </button>
+                        <button
+                          onClick={() => setEditingCategory(null)}
+                          disabled={isSubmitting}
+                          className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-400 transition-colors flex items-center space-x-reverse space-x-1"
+                        >
+                          <X className="w-4 h-4" />
+                          <span>لغو</span>
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-reverse space-x-2">
-                      <button className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-bold text-gray-800">{category.name}</h3>
+                        {category.description && (
+                          <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-reverse space-x-2">
+                        <button 
+                          onClick={() => handleEditCategory(category)}
+                          className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteCategory(category.id, category.name)}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
+              
+              {newsCategories.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Newspaper className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p>هیچ دسته‌بندی خبری موجود نیست</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -190,6 +303,7 @@ const AdminCategories = () => {
                     onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -199,6 +313,7 @@ const AdminCategories = () => {
                     value={newCategory.type}
                     onChange={(e) => setNewCategory({...newCategory, type: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    disabled={isSubmitting}
                   >
                     <option value="product">محصولات</option>
                     <option value="news">اخبار</option>
@@ -212,19 +327,22 @@ const AdminCategories = () => {
                     onChange={(e) => setNewCategory({...newCategory, description: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                     rows={3}
+                    disabled={isSubmitting}
                   />
                 </div>
 
                 <div className="flex gap-4 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300"
+                    disabled={isSubmitting}
+                    className="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300 disabled:opacity-50"
                   >
-                    افزودن
+                    {isSubmitting ? 'در حال افزودن...' : 'افزودن'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsAddModalOpen(false)}
+                    disabled={isSubmitting}
                     className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-400 transition-colors duration-300"
                   >
                     انصراف
