@@ -93,7 +93,7 @@ const News = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="relative">
                 <img 
-                  src={filteredNews[0].image}
+                  src={filteredNews[0].image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop'}
                   alt={filteredNews[0].title}
                   className="w-full h-80 object-cover rounded-2xl shadow-lg"
                 />
@@ -105,7 +105,7 @@ const News = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-reverse space-x-2 text-gray-500">
                   <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-bold">{filteredNews[0].date}</span>
+                  <span className="text-sm font-bold">{new Date(filteredNews[0].date).toLocaleDateString('fa-IR')}</span>
                   <span className="text-sm">•</span>
                   <span className="text-sm">{filteredNews[0].category}</span>
                 </div>
@@ -114,11 +114,16 @@ const News = () => {
                   {filteredNews[0].title}
                 </h2>
                 
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  {filteredNews[0].excerpt}
-                </p>
+                {filteredNews[0].excerpt && (
+                  <p className="text-gray-600 text-lg leading-relaxed">
+                    {filteredNews[0].excerpt}
+                  </p>
+                )}
                 
-                <button className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105">
+                <button 
+                  onClick={() => window.location.href = `/news/${filteredNews[0].id}`}
+                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
+                >
                   ادامه مطلب
                 </button>
               </div>
@@ -141,7 +146,15 @@ const News = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredNews.slice(1).map((item) => (
-              <NewsCard key={item.id} news={item} />
+              <NewsCard key={item.id} news={{
+                id: item.id,
+                title: item.title,
+                image: item.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=400&fit=crop',
+                date: new Date(item.date).toLocaleDateString('fa-IR'),
+                category: item.category,
+                excerpt: item.excerpt,
+                readTime: item.read_time
+              }} />
             ))}
           </div>
 

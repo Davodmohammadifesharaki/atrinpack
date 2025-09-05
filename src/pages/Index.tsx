@@ -206,7 +206,7 @@ const Index = () => {
                     <NewsCard news={{
                       id: news.id,
                       title: news.title,
-                      image: news.image_url,
+                      image: news.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=400&fit=crop',
                       date: new Date(news.date).toLocaleDateString('fa-IR'),
                       category: news.category,
                       excerpt: news.excerpt,

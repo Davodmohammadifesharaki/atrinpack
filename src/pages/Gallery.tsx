@@ -113,7 +113,7 @@ const Gallery = () => {
               >
                 <div className="relative overflow-hidden">
                   <img 
-                    src={item.image} 
+                    src={item.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop'} 
                     alt={item.title}
                     className="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -126,7 +126,9 @@ const Gallery = () => {
 
                 <div className="p-6">
                   <h3 className="text-lg font-black text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-2">{item.description}</p>
+                  {item.description && (
+                    <p className="text-gray-600 text-sm line-clamp-2">{item.description}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -152,7 +154,7 @@ const Gallery = () => {
           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
             <div className="relative">
               <img 
-                src={selectedImage.image}
+                src={selectedImage.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&h=600&fit=crop'}
                 alt={selectedImage.title}
                 className="w-full h-96 object-cover"
               />
@@ -165,7 +167,9 @@ const Gallery = () => {
             </div>
             <div className="p-6">
               <h2 className="text-2xl font-black text-gray-800 mb-2">{selectedImage.title}</h2>
-              <p className="text-gray-600">{selectedImage.description}</p>
+              {selectedImage.description && (
+                <p className="text-gray-600">{selectedImage.description}</p>
+              )}
             </div>
           </div>
         </div>
