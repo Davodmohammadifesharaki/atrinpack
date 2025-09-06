@@ -69,10 +69,10 @@ const AdminSettings = () => {
       if (seoData.ogImageFile) {
         // Delete old image if exists
         if (seoData.ogImage) {
-          await deleteImage(seoData.ogImage, 'seo');
+          await deleteImage(seoData.ogImage, 'images');
         }
         
-        const uploadedUrl = await uploadImage(seoData.ogImageFile, 'seo');
+        const uploadedUrl = await uploadImage(seoData.ogImageFile, 'images');
         if (uploadedUrl) {
           ogImageUrl = uploadedUrl;
         } else {
