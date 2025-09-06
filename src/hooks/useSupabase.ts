@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { uploadImage, deleteImage } from '../utils/imageUpload';
-import type { Product, News, GalleryItem, ContactMessage, User } from '../lib/supabase';
+import type { Product, News, GalleryItem, ContactMessage, User, UserProfile } from '../lib/supabase';
 
 // Single product hook
 export const useProduct = (id: string) => {
@@ -785,3 +785,75 @@ export const useCategories = (type?: string) => {
 
   return { categories, loading, error, refetch: fetchCategories };
 }
+
+// User operations
+export const userOperations = {
+  create: async (userData: { fullName: string; username: string; email: string; password: string; phone?: string; company?: string; role: string }) => {
+    // First create the auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+      options: {
+        data: {
+          full_name: userData.fullName,
+          username: userData.username
+        }
+      }
+    });
+
+    if (authError) return { data: null, error: authError };
+
+    // Then create the user profile
+    if (authData.user) {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .insert([{
+          id: authData.user.id,
+          full_name: userData.fullName,
+          username: userData.username,
+          phone: userData.phone,
+          company: userData.company,
+          role: userData.role
+        }])
+        .select()
+        .single();
+      return { data, error };
+    }
+
+    return { data: null, error: new Error('Failed to create user') };
+  },
+
+  update: async (id: string, userData: Partial<UserProfile>) => {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update(userData)
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  },
+
+  delete: async (id: string) => {
+    // Delete user profile first
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .delete()
+      .eq('id', id);
+
+    if (profileError) return { error: profileError };
+
+    // Then delete auth user (admin only operation)
+    const { error: authError } = await supabase.auth.admin.deleteUser(id);
+    return { error: authError };
+  },
+
+  toggleStatus: async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update({ status: newStatus })
+      .eq('id', id)
+      .select()
+      .single();
+    return { data, error };
+  }
