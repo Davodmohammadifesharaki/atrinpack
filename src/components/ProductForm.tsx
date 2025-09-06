@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProduct, productOperations } from '../hooks/useSupabase';
+import { getImageUrl, getAllImages } from '../utils/imageUpload';
+import MultipleImageUpload from './MultipleImageUpload';
 import { Save, X, Upload, ImageIcon } from 'lucide-react';
 
 interface ProductFormProps {
