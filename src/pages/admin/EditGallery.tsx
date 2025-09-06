@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import MultipleImageUpload from '../../components/MultipleImageUpload';
 import { Save, X, ImageIcon } from 'lucide-react';
 
 const EditGallery = () => {
