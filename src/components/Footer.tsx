@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../hooks/useSupabase';
-import { useSettings } from '../hooks/useSupabase';
 import { 
   Phone, 
   Mail, 
@@ -18,19 +17,6 @@ import {
 } from 'lucide-react';
 
 const Footer = () => {
-  const { settings: contactSettings } = useSettings('contact_info');
-  
-  const contactInfo = contactSettings || {
-    phones: ['021-12345678'],
-    emails: ['info@atrinpack.com'],
-    socialMedia: {
-      whatsapp: '',
-      instagram: '',
-      facebook: '',
-      linkedin: ''
-    }
-  };
-
   const { settings: contactSettings } = useSettings('contact_info');
   
   const contactInfo = contactSettings || {
