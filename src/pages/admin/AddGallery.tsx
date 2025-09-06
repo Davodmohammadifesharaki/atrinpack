@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import MultipleImageUpload from '../../components/MultipleImageUpload';
-import MultipleImageUpload from '../../components/MultipleImageUpload';
 import { galleryOperations } from '../../hooks/useSupabase';
 import { Save, X, ImageIcon } from 'lucide-react';
 

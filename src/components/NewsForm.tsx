@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useNewsItem, newsOperations } from '../hooks/useSupabase';
 import { getImageUrl, getAllImages } from '../utils/imageUpload';
 import MultipleImageUpload from './MultipleImageUpload';
-import { getImageUrl, getAllImages } from '../utils/imageUpload';
-import MultipleImageUpload from './MultipleImageUpload';
 import { Save, X, ImageIcon } from 'lucide-react';
 
 interface NewsFormProps {
