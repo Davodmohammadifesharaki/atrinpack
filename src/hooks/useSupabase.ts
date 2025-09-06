@@ -784,4 +784,4 @@ export const useCategories = (type?: string) => {
   }, [type]);
 
   return { categories, loading, error, refetch: fetchCategories };
-};
+}
