@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { useSettings, settingsOperations } from '../../hooks/useSupabase';
+import SingleImageUpload from '../../components/SingleImageUpload';
+import { uploadImage, deleteImage } from '../../utils/imageUpload';
 import { 
   Settings, 
   Save, 
@@ -26,6 +28,7 @@ const AdminSettings = () => {
     siteDescription: '',
     keywords: '',
     ogImage: '',
+    ogImageFile: null as File | null,
     twitterCard: 'summary_large_image',
     robotsTxt: '',
     sitemapUrl: '',
@@ -60,10 +63,41 @@ const AdminSettings = () => {
   const handleSaveSeo = async () => {
     setIsSubmitting(true);
     try {
-      const { error } = await settingsOperations.set('seo_settings', seoData);
+      let ogImageUrl = seoData.ogImage;
+      
+      // Upload new OG image if selected
+      if (seoData.ogImageFile) {
+        // Delete old image if exists
+        if (seoData.ogImage) {
+          await deleteImage(seoData.ogImage, 'seo');
+        }
+        
+        const uploadedUrl = await uploadImage(seoData.ogImageFile, 'seo');
+        if (uploadedUrl) {
+          ogImageUrl = uploadedUrl;
+        } else {
+          throw new Error('خطا در آپلود تصویر');
+        }
+      }
+      
+      const dataToSave = {
+        ...seoData,
+        ogImage: ogImageUrl
+      };
+      delete dataToSave.ogImageFile; // Remove file object before saving
+      
+      const { error } = await settingsOperations.set('seo_settings', dataToSave);
       if (error) throw error;
 
       alert('تنظیمات سئو با موفقیت ذخیره شد!');
+      
+      // Update local state with new URL
+      setSeoData({
+        ...seoData,
+        ogImage: ogImageUrl,
+        ogImageFile: null
+      });
+      
       refetchSeo();
     } catch (error) {
       console.error('Error saving SEO settings:', error);
@@ -71,6 +105,21 @@ const AdminSettings = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleOgImageChange = (file: File | null) => {
+    setSeoData({
+      ...seoData,
+      ogImageFile: file
+    });
+  };
+
+  const handleRemoveExistingOgImage = () => {
+    setSeoData({
+      ...seoData,
+      ogImage: '',
+      ogImageFile: null
+    });
   };
 
   const tabs = [
@@ -189,12 +238,16 @@ const AdminSettings = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-gray-700 font-bold mb-2">تصویر Open Graph</label>
-                      <input
-                        type="url"
-                        value={seoData.ogImage}
-                        onChange={(e) => setSeoData({...seoData, ogImage: e.target.value})}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="URL تصویر برای شبکه‌های اجتماعی"
+                      <SingleImageUpload
+                        image={seoData.ogImageFile}
+                        onImageChange={handleOgImageChange}
+                        maxSizeInMB={5}
+                        existingImageUrl={seoData.ogImage}
+                        onExistingImageRemove={handleRemoveExistingOgImage}
+                        disabled={isSubmitting}
+                        title="تصویر Open Graph"
+                        description="تصویر برای نمایش در شبکه‌های اجتماعی"
+                        acceptedFormats="image/png,image/jpeg,image/jpg,image/webp"
                       />
                       <p className="text-xs text-gray-500 mt-1">ابعاد توصیه شده: ۱۲۰۰×۶۳۰ پیکسل</p>
                     </div>
