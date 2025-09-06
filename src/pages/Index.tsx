@@ -124,7 +124,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Crown className="w-12 h-12 text-amber-500 ml-4" />
-              <h2 className="text-4xl font-black text-gray-800">محصولات ویژه آترین پک</h2>
+              <h2 className="text-4xl font-black text-gray-800">محصولات ویژه عطرین پک</h2>
             </div>
             <p className="text-xl text-gray-600">برترین محصولات بسته‌بندی لوکس با کیفیت بین‌المللی</p>
           </div>
@@ -186,7 +186,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <MessageCircle className="w-12 h-12 text-red-500 ml-4" />
-              <h2 className="text-4xl font-black text-gray-800">آخرین اخبار آترین پک</h2>
+              <h2 className="text-4xl font-black text-gray-800">آخرین اخبار عطرین پک</h2>
             </div>
             <p className="text-xl text-gray-600">جدیدترین اخبار و رویدادهای شرکت</p>
           </div>
@@ -269,16 +269,17 @@ const Index = () => {
       </section>
 
       {/* درباره آترین پک */}
+      {/* درباره عطرین پک */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="flex items-center mb-6">
                 <Crown className="w-12 h-12 text-amber-500 ml-4" />
-                <h2 className="text-4xl font-black text-gray-800">درباره آترین پک</h2>
+                <h2 className="text-4xl font-black text-gray-800">درباره عطرین پک</h2>
               </div>
               <p className="text-xl text-gray-600 leading-relaxed">
-                آترین پک با بیش از ۱۵ سال تجربه در صنعت بسته‌بندی لوکس، 
+                عطرین پک با بیش از ۱۵ سال تجربه در صنعت بسته‌بندی لوکس، 
                 تولیدکننده انواع شیشه‌های عطر، پمپ‌های اسپری، درپوش‌های هنری 
                 و اسانس‌های طبیعی با کیفیت بین‌المللی است.
               </p>
@@ -318,7 +319,7 @@ const Index = () => {
             <div className="relative">
               <img 
                 src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop"
-                alt="کارخانه آترین پک"
+                alt="کارخانه عطرین پک"
                 className="w-full h-80 object-cover rounded-2xl shadow-xl"
               />
               <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl">
@@ -436,7 +437,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <TrendingUp className="w-12 h-12 text-blue-500 ml-4" />
-              <h2 className="text-4xl font-black text-gray-800">دستاوردهای آترین پک</h2>
+              <h2 className="text-2xl font-black text-gray-800 flex items-center">دستاوردهای عطرین پک</h2>
             </div>
             <p className="text-xl text-gray-600">نتایج ۱۵ سال تلاش مستمر</p>
           </div>
@@ -473,7 +474,7 @@ const Index = () => {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-gray-800 mb-4">چرا آترین پک؟</h2>
+            <h2 className="text-4xl font-black text-gray-800 mb-4">چرا عطرین پک؟</h2>
             <p className="text-xl text-gray-600">مزایای همکاری با ما</p>
           </div>
           

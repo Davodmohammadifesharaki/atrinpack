@@ -192,7 +192,7 @@ const AdminDashboard = () => {
                 <Crown className="w-10 h-10 text-amber-300" />
                 <div>
                   <h1 className="text-3xl font-black">خوش آمدید به پنل مدیریت</h1>
-                  <p className="text-blue-100 text-lg">آترین پک - بسته‌بندی لوکس</p>
+                  <p className="text-blue-100 text-lg">عطرین پک - بسته‌بندی لوکس</p>
                 </div>
               </div>
               <p className="text-blue-100">مدیریت کامل سایت و محتوا از این پنل</p>

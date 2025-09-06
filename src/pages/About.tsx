@@ -159,7 +159,7 @@ const About = () => {
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-4xl font-black mb-6">کاتالوگ محصولات ۲۰۲۴</h2>
+                <h2 className="text-4xl font-black mb-6">کاتالوگ محصولات ۲۰۲۵</h2>
                 <p className="text-xl text-amber-100 mb-8 leading-relaxed">
                   مجموعه کاملی از تمام محصولات عطرین پک با جزئیات فنی، تصاویر باکیفیت و اطلاعات قیمت
                 </p>
@@ -259,7 +259,7 @@ const About = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-black text-gray-800 flex items-center">
                   <FileText className="w-8 h-8 ml-3 text-amber-500" />
-                  کاتالوگ عطرین پک ۲۰۲۴
+                  کاتالوگ عطرین پک ۲۰۲۵
                 </h3>
                 <button
                   onClick={() => setIsCatalogModalOpen(false)}

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSettings } from '../hooks/useSupabase';
 import { 
   Phone, 
   Mail, 
@@ -16,6 +17,19 @@ import {
 } from 'lucide-react';
 
 const Footer = () => {
+  const { settings: contactSettings } = useSettings('contact_info');
+  
+  const contactInfo = contactSettings || {
+    phones: ['021-12345678'],
+    emails: ['info@atrinpack.com'],
+    socialMedia: {
+      whatsapp: '',
+      instagram: '',
+      facebook: '',
+      linkedin: ''
+    }
+  };
+
   return (
     <footer className="bg-gradient-to-br from-gray-900 to-black text-white" dir="rtl">
       {/* Main Footer Content */}
@@ -28,13 +42,13 @@ const Footer = () => {
                 <Crown className="w-10 h-10 text-white" />
               </div>
               <div>
-                <div className="text-3xl font-black">آترین پک</div>
+                <div className="text-3xl font-black">عطرین پک</div>
                 <div className="text-amber-400 font-bold">بسته‌بندی لوکس</div>
               </div>
             </div>
             
             <p className="text-gray-300 leading-relaxed text-lg">
-              آترین پک با بیش از 15 سال تجربه در صنعت بسته‌بندی لوکس، 
+              عطرین پک با بیش از 15 سال تجربه در صنعت بسته‌بندی لوکس، 
               تولیدکننده انواع شیشه‌های عطر، پمپ‌های اسپری، درپوش‌های هنری 
               و اسانس‌های طبیعی با کیفیت بین‌المللی است.
             </p>
@@ -125,7 +139,7 @@ const Footer = () => {
             
             <div className="space-y-4">
               <a 
-                href="tel:+982112345678" 
+                href={`tel:${contactInfo.phones?.[0]?.replace(/\s/g, '') || '+982112345678'}`}
                 className="flex items-center space-x-reverse space-x-4 text-gray-300 hover:text-green-400 transition-colors duration-300 group"
               >
                 <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
@@ -133,12 +147,12 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="font-bold">تلفن تماس</div>
-                  <div className="text-lg">021-12345678</div>
+                  <div className="text-lg">{contactInfo.phones?.[0] || '021-12345678'}</div>
                 </div>
               </a>
               
               <a 
-                href="https://wa.me/989123456789" 
+                href={contactInfo.socialMedia?.whatsapp || 'https://wa.me/989123456789'}
                 className="flex items-center space-x-reverse space-x-4 text-gray-300 hover:text-green-400 transition-colors duration-300 group"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -148,12 +162,12 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="font-bold">واتساپ</div>
-                  <div className="text-lg">09123456789</div>
+                  <div className="text-lg">{contactInfo.phones?.[1] || '09123456789'}</div>
                 </div>
               </a>
               
               <a 
-                href="mailto:info@atrinpack.com" 
+                href={`mailto:${contactInfo.emails?.[0] || 'info@atrinpack.com'}`}
                 className="flex items-center space-x-reverse space-x-4 text-gray-300 hover:text-blue-400 transition-colors duration-300 group"
               >
                 <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
@@ -161,7 +175,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="font-bold">ایمیل</div>
-                  <div className="text-lg">info@atrinpack.com</div>
+                  <div className="text-lg">{contactInfo.emails?.[0] || 'info@atrinpack.com'}</div>
                 </div>
               </a>
               
@@ -171,7 +185,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="font-bold">آدرس</div>
-                  <div className="text-lg">تهران، خیابان کریمخان، پلاک 123</div>
+                  <div className="text-lg">{contactInfo.addresses?.[0]?.address || 'تهران، خیابان کریمخان، پلاک 123'}</div>
                 </div>
               </div>
             </div>
@@ -181,7 +195,7 @@ const Footer = () => {
               <h4 className="text-lg font-bold text-amber-400">شبکه‌های اجتماعی</h4>
               <div className="flex space-x-reverse space-x-4">
                 <a 
-                  href="https://instagram.com/atrinpack" 
+                  href={contactInfo.socialMedia?.instagram || 'https://instagram.com/atrinpack'}
                   className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -189,7 +203,7 @@ const Footer = () => {
                   <Instagram className="w-6 h-6" />
                 </a>
                 <a 
-                  href="https://facebook.com/atrinpack" 
+                  href={contactInfo.socialMedia?.facebook || 'https://facebook.com/atrinpack'}
                   className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -197,7 +211,7 @@ const Footer = () => {
                   <Facebook className="w-6 h-6" />
                 </a>
                 <a 
-                  href="https://linkedin.com/company/atrinpack" 
+                  href={contactInfo.socialMedia?.linkedin || 'https://linkedin.com/company/atrinpack'}
                   className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -245,8 +259,8 @@ const Footer = () => {
             </div>
             
             <div className="text-gray-400 text-sm text-center md:text-left">
-              <p>&copy; 1403 آترین پک. تمامی حقوق محفوظ است.</p>
-              <p className="mt-1">طراحی و توسط تیم آترین پک</p>
+              <p>&copy; 1403 عطرین پک. تمامی حقوق محفوظ است.</p>
+              <p className="mt-1">طراحی و توسط تیم عطرین پک</p>
             </div>
           </div>
         </div>

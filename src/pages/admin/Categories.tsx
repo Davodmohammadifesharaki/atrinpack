@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
-import { useCategories, categoryOperations } from '../../hooks/useSupabase';
+import { useCategories, categoriesOperations } from '../../hooks/useSupabase';
 import { 
   Tags, 
   Plus, 
@@ -33,7 +33,7 @@ const AdminCategories = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await categoryOperations.create(newCategory);
+      const { error } = await categoriesOperations.create(newCategory);
       if (error) throw error;
 
       alert('دسته‌بندی جدید با موفقیت اضافه شد!');
@@ -56,7 +56,7 @@ const AdminCategories = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await categoryOperations.update(editingCategory.id, {
+      const { error } = await categoriesOperations.update(editingCategory.id, {
         name: editingCategory.name,
         description: editingCategory.description
       });
@@ -78,7 +78,7 @@ const AdminCategories = () => {
     if (!confirm(`آیا از حذف دسته‌بندی "${name}" اطمینان دارید؟`)) return;
     
     try {
-      const { error } = await categoryOperations.delete(id);
+      const { error } = await categoriesOperations.delete(id);
       if (error) throw error;
 
       alert('دسته‌بندی با موفقیت حذف شد!');

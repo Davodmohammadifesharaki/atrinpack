@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProduct, productOperations } from '../hooks/useSupabase';
@@ -262,15 +261,30 @@ const ProductForm: React.FC<ProductFormProps> = ({ mode, productId, onSave, onCa
 
           <div>
             <label className="block text-gray-700 font-bold mb-2">رنگ</label>
-            <input
-              type="text"
+            <select
               name="color"
               value={formData.color}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="رنگ محصول"
               disabled={isSubmitting}
-            />
+            >
+              <option value="">انتخاب رنگ</option>
+              <option value="شفاف">شفاف</option>
+              <option value="کریستالی">کریستالی</option>
+              <option value="مشکی">مشکی</option>
+              <option value="سفید">سفید</option>
+              <option value="طلایی">طلایی</option>
+              <option value="نقره‌ای">نقره‌ای</option>
+              <option value="آبی">آبی</option>
+              <option value="سبز">سبز</option>
+              <option value="قرمز">قرمز</option>
+              <option value="صورتی">صورتی</option>
+              <option value="بنفش">بنفش</option>
+              <option value="زرد">زرد</option>
+              <option value="قهوه‌ای">قهوه‌ای</option>
+              <option value="نارنجی">نارنجی</option>
+              <option value="خاکستری">خاکستری</option>
+            </select>
           </div>
 
           <div>

@@ -3,6 +3,7 @@ import AdminLayout from '../../components/AdminLayout';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useContactMessages, useSettings, settingsOperations } from '../../hooks/useSupabase';
+import { supabase } from '../../lib/supabase';
 import { 
   MessageSquare, 
   Phone, 

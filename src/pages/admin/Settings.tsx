@@ -212,6 +212,28 @@ const AdminSettings = () => {
                         <option value="player">پلیر</option>
                       </select>
                     </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">عنوان صفحه اصلی</label>
+                      <input
+                        type="text"
+                        value={seoData.homePageTitle || ''}
+                        onChange={(e) => setSeoData({...seoData, homePageTitle: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="عنوان صفحه اصلی برای موتورهای جستجو"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-bold mb-2">توضیحات صفحه اصلی</label>
+                      <textarea
+                        value={seoData.homePageDescription || ''}
+                        onChange={(e) => setSeoData({...seoData, homePageDescription: e.target.value})}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        placeholder="توضیحات صفحه اصلی برای موتورهای جستجو"
+                      />
+                    </div>
                   </div>
                 </div>
 

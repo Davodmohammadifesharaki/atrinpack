@@ -81,7 +81,7 @@ const AdminLogin = () => {
             <Crown className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-3xl font-black text-gray-800 mb-2">پنل مدیریت</h1>
-          <p className="text-gray-600">آترین پک</p>
+          <p className="text-gray-600">عطرین پک</p>
         </div>
 
         {/* Login Form */}

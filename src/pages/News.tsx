@@ -37,7 +37,7 @@ const News = () => {
       <section className="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-black mb-4">اخبار آترین پک</h1>
+            <h1 className="text-4xl lg:text-5xl font-black mb-4">اخبار عطرین پک</h1>
             <p className="text-xl text-red-100">آخرین اخبار و رویدادهای شرکت</p>
           </div>
         </div>

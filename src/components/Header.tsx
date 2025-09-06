@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSettings } from '../hooks/useSupabase';
 import { 
   Menu, 
   X, 
@@ -20,6 +21,7 @@ import {
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
+  const { settings: aboutSettings } = useSettings('about_page_content');
   const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
@@ -40,7 +42,7 @@ const Header = () => {
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <div className="text-2xl font-black text-gray-800">آترین پک</div>
+              <div className="text-2xl font-black text-gray-800">عطرین پک</div>
               <div className="text-sm text-amber-600 font-bold">بسته‌بندی لوکس</div>
             </div>
           </Link>
@@ -153,13 +155,17 @@ const Header = () => {
                             alt="کاتالوگ"
                             className="w-24 h-30 object-cover rounded-lg mx-auto mb-3 shadow-lg"
                           />
-                          <div className="text-lg font-bold text-gray-800">کاتالوگ کامل 2024</div>
+                          <div className="text-lg font-bold text-gray-800">کاتالوگ کامل 2025</div>
                         </div>
                         <div className="space-y-3">
-                          <button className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2">
+                          <a
+                            href={aboutSettings?.catalogUrl || '#'}
+                            download
+                            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                          >
                             <Download className="w-4 h-4" />
                             <span>دانلود PDF</span>
-                          </button>
+                          </a>
                           <button className="w-full bg-white text-green-600 py-2 rounded-lg hover:bg-green-50 transition-colors duration-300 flex items-center justify-center space-x-reverse space-x-2 border border-green-200">
                             <Eye className="w-4 h-4" />
                             <span>مشاهده آنلاین</span>
@@ -191,7 +197,7 @@ const Header = () => {
               className="flex items-center space-x-reverse space-x-2 text-gray-700 hover:text-blue-600 font-bold text-lg transition-colors duration-300"
             >
               <Info className="w-5 h-5" />
-              <span>درباره آترین پک</span>
+              <span>درباره عطرین پک</span>
             </Link>
 
             <Link 

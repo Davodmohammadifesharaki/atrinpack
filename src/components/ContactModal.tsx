@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useSettings } from '../hooks/useSupabase';
 import { X, Phone, Mail, MessageCircle, Instagram, Facebook, Linkedin } from 'lucide-react';
 
 interface ContactModalProps {
@@ -8,6 +9,19 @@ interface ContactModalProps {
 }
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
+  const { settings: contactSettings } = useSettings('contact_info');
+  
+  const contactInfo = contactSettings || {
+    phones: ['021-12345678', '09123456789'],
+    emails: ['info@atrinpack.com'],
+    socialMedia: {
+      whatsapp: '',
+      instagram: '',
+      facebook: '',
+      linkedin: ''
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -32,7 +46,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
           {/* Phone */}
           <a
-            href="tel:+982112345678"
+            href={`tel:${contactInfo.phones?.[0]?.replace(/\s/g, '') || '+982112345678'}`}
             className="flex items-center space-x-reverse space-x-4 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all duration-300 group"
           >
             <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
@@ -40,14 +54,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <div className="font-bold text-gray-800">تماس تلفنی</div>
-              <div className="text-blue-600 font-bold">021-12345678</div>
+              <div className="text-blue-600 font-bold">{contactInfo.phones?.[0] || '021-12345678'}</div>
               <div className="text-sm text-gray-600">شنبه تا پنج‌شنبه، 8 تا 18</div>
             </div>
           </a>
 
           {/* Mobile */}
           <a
-            href="tel:+989123456789"
+            href={`tel:${contactInfo.phones?.[1]?.replace(/\s/g, '') || '+989123456789'}`}
             className="flex items-center space-x-reverse space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-all duration-300 group"
           >
             <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors duration-300">
@@ -55,31 +69,33 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <div className="font-bold text-gray-800">تماس همراه</div>
-              <div className="text-green-600 font-bold">09123456789</div>
+              <div className="text-green-600 font-bold">{contactInfo.phones?.[1] || '09123456789'}</div>
               <div className="text-sm text-gray-600">پاسخگویی 24 ساعته</div>
             </div>
           </a>
 
-          {/* Telegram */}
-          <a
-            href="https://t.me/atrinpack"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center space-x-reverse space-x-4 p-4 bg-cyan-50 rounded-xl hover:bg-cyan-100 transition-all duration-300 group"
-          >
-            <div className="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center group-hover:bg-cyan-600 transition-colors duration-300">
-              <MessageCircle className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="font-bold text-gray-800">تلگرام</div>
-              <div className="text-cyan-600 font-bold">@atrinpack</div>
-              <div className="text-sm text-gray-600">پاسخگویی سریع</div>
-            </div>
-          </a>
+          {/* WhatsApp */}
+          {contactInfo.socialMedia?.whatsapp && (
+            <a
+              href={contactInfo.socialMedia.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-reverse space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-all duration-300 group"
+            >
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors duration-300">
+                <MessageCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <div className="font-bold text-gray-800">واتساپ</div>
+                <div className="text-green-600 font-bold">پاسخگویی سریع</div>
+                <div className="text-sm text-gray-600">24 ساعته</div>
+              </div>
+            </a>
+          )}
 
           {/* Email */}
           <a
-            href="mailto:info@atrinpack.com"
+            href={`mailto:${contactInfo.emails?.[0] || 'info@atrinpack.com'}`}
             className="flex items-center space-x-reverse space-x-4 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-all duration-300 group"
           >
             <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors duration-300">
@@ -87,7 +103,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <div className="font-bold text-gray-800">ایمیل</div>
-              <div className="text-purple-600 font-bold">info@atrinpack.com</div>
+              <div className="text-purple-600 font-bold">{contactInfo.emails?.[0] || 'info@atrinpack.com'}</div>
               <div className="text-sm text-gray-600">پاسخ در کمتر از 2 ساعت</div>
             </div>
           </a>
@@ -96,30 +112,36 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
           <div className="pt-4 border-t border-gray-200">
             <p className="text-gray-600 text-center mb-4">شبکه‌های اجتماعی:</p>
             <div className="flex justify-center space-x-reverse space-x-4">
-              <a
-                href="https://instagram.com/atrinpack"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-              >
-                <Instagram className="w-6 h-6 text-white" />
-              </a>
-              <a
-                href="https://facebook.com/atrinpack"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-              >
-                <Facebook className="w-6 h-6 text-white" />
-              </a>
-              <a
-                href="https://linkedin.com/company/atrinpack"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-              >
-                <Linkedin className="w-6 h-6 text-white" />
-              </a>
+              {contactInfo.socialMedia?.instagram && (
+                <a
+                  href={contactInfo.socialMedia.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                >
+                  <Instagram className="w-6 h-6 text-white" />
+                </a>
+              )}
+              {contactInfo.socialMedia?.facebook && (
+                <a
+                  href={contactInfo.socialMedia.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                >
+                  <Facebook className="w-6 h-6 text-white" />
+                </a>
+              )}
+              {contactInfo.socialMedia?.linkedin && (
+                <a
+                  href={contactInfo.socialMedia.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                >
+                  <Linkedin className="w-6 h-6 text-white" />
+                </a>
+              )}
             </div>
           </div>
         </div>

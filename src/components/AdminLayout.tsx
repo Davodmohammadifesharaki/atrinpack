@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSettings } from '../hooks/useSupabase';
 import NotificationPanel from './NotificationPanel';
 import { 
   Home, 
@@ -28,12 +29,14 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { settings: userProfile, refetch: refetchProfile } = useSettings(`user_profile_${localStorage.getItem('adminUser') ? JSON.parse(localStorage.getItem('adminUser')).id : ''}`);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userRole, setUserRole] = useState<'admin'>('admin');
   const [userInfo, setUserInfo] = useState({
     username: '',
     fullName: '',
-    email: ''
+    email: '',
+    avatarUrl: ''
   });
 
   useEffect(() => {
@@ -49,7 +52,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     setUserInfo({
       username: user.username || 'admin',
       fullName: user.fullName || 'مدیر آترین پک',
-      email: user.email || 'admin@atrinpack.com'
+      email: user.email || 'admin@atrinpack.com',
+      avatarUrl: user.avatarUrl || ''
     });
   }, [navigate]);
 
@@ -105,6 +109,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: Users, 
       label: 'مدیریت کاربران', 
       path: '/admin/users',
+      roles: ['admin']
+    },
+    { 
+      icon: FileText, 
+      label: 'تنظیمات درباره ما', 
+      path: '/admin/about',
       roles: ['admin']
     },
     { 
@@ -167,8 +177,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* User Info */}
         <div className={`px-6 py-4 border-b border-gray-200 ${isSidebarOpen ? 'block' : 'hidden'}`}>
           <div className="flex items-center space-x-reverse space-x-3">
-            <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
-              <User className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
+              {userInfo.avatarUrl ? (
+                <img 
+                  src={userInfo.avatarUrl} 
+                  alt="پروفایل" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-6 h-6 text-white" />
+              )}
             </div>
             <div className="flex-1">
               <p className="font-bold text-gray-800">{userInfo.fullName}</p>
@@ -240,8 +258,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <p className="text-sm font-bold text-gray-800">{userInfo.fullName}</p>
                 <p className="text-xs text-gray-600">{getRoleLabel(userRole)}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
+                {userInfo.avatarUrl ? (
+                  <img 
+                    src={userInfo.avatarUrl} 
+                    alt="پروفایل" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-white" />
+                )}
               </div>
             </div>
           </div>
