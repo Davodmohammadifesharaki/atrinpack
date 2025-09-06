@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import ContactModal from '../components/ContactModal';
 import { contactOperations, useSettings } from '../hooks/useSupabase';
 import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { 
   Phone, 
   Mail, 
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 const Contact = () => {
+  const { settings: contactSettings, loading: contactLoading } = useSettings('contact_info');
   const { settings: contactSettings, loading: contactLoading } = useSettings('contact_info');
   const [formData, setFormData] = useState({
     name: '',
@@ -87,7 +89,16 @@ const Contact = () => {
       facebook: '',
       linkedin: ''
     }
-  };
+
+  if (contactLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50" dir="rtl">
+        <Header />
+        <LoadingSpinner message="در حال بارگذاری اطلاعات تماس..." />
+        <Footer />
+      </div>
+    );
+  }
 
   if (contactLoading) {
     return (
@@ -135,15 +146,27 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-reverse space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-green-600" />
+                {(contactInfo.addresses || []).map((address, index) => (
+                  <div key={index} className="flex items-start space-x-reverse space-x-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800 mb-1">{address.name || 'آدرس'}</h3>
+                      <p className="text-gray-600">{address.address}</p>
+                      {address.mapUrl && (
+                        <a
+                          href={address.mapUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm font-bold"
+                        >
+                          مشاهده در نقشه
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-gray-800 mb-1">ایمیل</h3>
-                    {(contactInfo.emails || []).map((email, index) => (
-                      <p key={index} className="text-gray-600">
-                        <a href={`mailto:${email}`} className="hover:text-green-600">{email}</a>
+                ))}
                       </p>
                     ))}
                   </div>
@@ -362,27 +385,37 @@ const Contact = () => {
                     required
                   ></textarea>
                 </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-bold text-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-reverse space-x-2"
-                >
-                  <Send className="w-6 h-6" />
-                  <span>ارسال پیام</span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        {/* نقشه تعاملی */}
-        <div className="mt-16">
-          <div className="bg-white p-8 rounded-2xl shadow-lg">
-            <h2 className="text-2xl font-black text-gray-800 mb-6">موقعیت ما روی نقشه</h2>
-            <div className="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center relative overflow-hidden">
-              <div className="text-center text-gray-500">
-                <MapPin className="w-16 h-16 mx-auto mb-4" />
-                <p className="text-lg font-bold">نقشه تعاملی</p>
+                  {contactInfo.socialMedia?.whatsapp && (
+                    <a 
+                      href={contactInfo.socialMedia.whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                    >
+                      <MessageCircle className="w-6 h-6 text-white" />
+                    </a>
+                  )}
+                  {contactInfo.socialMedia?.instagram && (
+                    <a 
+                      href={contactInfo.socialMedia.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                    >
+                      <Instagram className="w-6 h-6 text-white" />
+                    </a>
+                  )}
+                  {contactInfo.socialMedia?.facebook && (
+                    <a 
+                      href={contactInfo.socialMedia.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
+                    >
+                      <Facebook className="w-6 h-6 text-white" />
+                    </a>
+                  )}
+                  {contactInfo.socialMedia?.linkedin && (
                 <p className="text-sm mb-4">{contactInfo.addresses?.[0]?.address || 'آدرس موجود نیست'}</p>
                 {contactInfo.addresses?.[0]?.mapUrl && (
                   <a
