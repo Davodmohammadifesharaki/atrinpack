@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSettings } from '../hooks/useSupabase';
+import { useSettings } from '../hooks/useSupabase';
 import NotificationPanel from './NotificationPanel';
 import { 
   Home, 
@@ -30,12 +31,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { settings: userProfile, refetch: refetchProfile } = useSettings(`user_profile_${localStorage.getItem('adminUser') ? JSON.parse(localStorage.getItem('adminUser')).id : ''}`);
+  const { settings: userProfile, refetch: refetchProfile } = useSettings(`user_profile_${localStorage.getItem('adminUser') ? JSON.parse(localStorage.getItem('adminUser')).id : ''}`);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userRole, setUserRole] = useState<'admin'>('admin');
   const [userInfo, setUserInfo] = useState({
     username: '',
     fullName: '',
     email: '',
+    avatarUrl: ''
     avatarUrl: ''
   });
 
@@ -53,6 +56,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       username: user.username || 'admin',
       fullName: user.fullName || 'مدیر آترین پک',
       email: user.email || 'admin@atrinpack.com',
+      avatarUrl: user.avatarUrl || ''
       avatarUrl: user.avatarUrl || ''
     });
   }, [navigate]);
@@ -109,6 +113,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: Users, 
       label: 'مدیریت کاربران', 
       path: '/admin/users',
+      roles: ['admin']
+    },
+    { 
+      icon: FileText, 
+      label: 'تنظیمات درباره ما', 
+      path: '/admin/about',
       roles: ['admin']
     },
     { 
@@ -179,6 +189,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex items-center space-x-reverse space-x-3">
             <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
               {userInfo.avatarUrl ? (
+                <img 
+                  src={userInfo.avatarUrl} 
+                  alt="پروفایل" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-6 h-6 text-white" />
+              )}
                 <img 
                   src={userInfo.avatarUrl} 
                   alt="پروفایل" 
@@ -260,6 +278,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
                 {userInfo.avatarUrl ? (
+                  <img 
+                    src={userInfo.avatarUrl} 
+                    alt="پروفایل" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-white" />
+                )}
                   <img 
                     src={userInfo.avatarUrl} 
                     alt="پروفایل" 
