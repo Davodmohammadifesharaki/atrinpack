@@ -328,7 +328,16 @@ const Products = () => {
             }`}>
               {filteredProducts.map((product) => (
                 <div key={product.id} className="group">
-                  <ProductCard {...product} />
+                  <ProductCard 
+                    id={product.id}
+                    name={product.name}
+                    category={product.category}
+                    image={product.image_url}
+                    images={product.images}
+                    price={product.price}
+                    isNew={product.is_new}
+                    isFeatured={product.is_featured}
+                  />
                   {/* دکمه‌های هاور */}
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-4 flex gap-3">
                     <button 

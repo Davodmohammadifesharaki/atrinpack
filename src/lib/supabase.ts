@@ -12,6 +12,7 @@ export interface Product {
   category: string;
   description?: string;
   image_url?: string;
+  images?: string[];
   price?: string;
   min_order?: number;
   weight?: number;
@@ -35,6 +36,7 @@ export interface News {
   content: string;
   excerpt?: string;
   image_url?: string;
+  images?: string[];
   date?: string;
   featured?: boolean;
   visible?: boolean;
@@ -50,6 +52,7 @@ export interface Gallery {
   category: string;
   description?: string;
   image_url: string;
+  images?: string[];
   views?: number;
   downloads?: number;
   created_at?: string;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { uploadImage, deleteImage } from '../utils/imageUpload';
+import { uploadImage, deleteImage, uploadMultipleImages, deleteMultipleImages } from '../utils/imageUpload';
 import type { Product, News, GalleryItem, ContactMessage, User, UserProfile } from '../lib/supabase';
 
 // Single product hook
@@ -309,48 +309,55 @@ export const useAuth = () => {
 
 // Utility functions for data operations
 export const productOperations = {
-  create: async (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>, imageFile?: File) => {
-    let imageUrl = null;
+  create: async (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>, imageFiles?: File[]) => {
+    let images: string[] = [];
     
-    // Upload image if provided
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile, 'products');
-      if (!imageUrl) {
+    // Upload images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      images = await uploadMultipleImages(imageFiles, 'products');
+      if (images.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
     }
 
     const { data, error } = await supabase
       .from('products')
-      .insert([{ ...productData, image_url: imageUrl }])
+      .insert([{ 
+        ...productData, 
+        images,
+        image_url: images.length > 0 ? images[0] : null 
+      }])
       .select()
       .single();
     return { data, error };
   },
 
-  update: async (id: string, productData: Partial<Product>, imageFile?: File) => {
+  update: async (id: string, productData: Partial<Product>, imageFiles?: File[]) => {
     let updateData = { ...productData };
     
-    // Upload new image if provided
-    if (imageFile) {
-      // Get current product to delete old image
+    // Upload new images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      // Get current product to delete old images
       const { data: currentProduct } = await supabase
         .from('products')
-        .select('image_url')
+        .select('images, image_url')
         .eq('id', id)
         .single();
 
-      const imageUrl = await uploadImage(imageFile, 'products');
-      if (!imageUrl) {
+      const newImages = await uploadMultipleImages(imageFiles, 'products');
+      if (newImages.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
 
-      // Delete old image if exists
-      if (currentProduct?.image_url) {
+      // Delete old images if exist
+      if (currentProduct?.images && currentProduct.images.length > 0) {
+        await deleteMultipleImages(currentProduct.images, 'products');
+      } else if (currentProduct?.image_url) {
         await deleteImage(currentProduct.image_url, 'products');
       }
 
-      updateData.image_url = imageUrl;
+      updateData.images = newImages;
+      updateData.image_url = newImages[0];
     }
 
     const { data, error } = await supabase
@@ -363,15 +370,17 @@ export const productOperations = {
   },
 
   delete: async (id: string) => {
-    // Get product to delete associated image
+    // Get product to delete associated images
     const { data: product } = await supabase
       .from('products')
-      .select('image_url')
+      .select('images, image_url')
       .eq('id', id)
       .single();
 
-    // Delete image from storage if exists
-    if (product?.image_url) {
+    // Delete images from storage if exist
+    if (product?.images && product.images.length > 0) {
+      await deleteMultipleImages(product.images, 'products');
+    } else if (product?.image_url) {
       await deleteImage(product.image_url, 'products');
     }
 
@@ -404,48 +413,55 @@ export const productOperations = {
 };
 
 export const newsOperations = {
-  create: async (newsData: Omit<News, 'id' | 'created_at' | 'updated_at'>, imageFile?: File) => {
-    let imageUrl = null;
+  create: async (newsData: Omit<News, 'id' | 'created_at' | 'updated_at'>, imageFiles?: File[]) => {
+    let images: string[] = [];
     
-    // Upload image if provided
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile, 'news');
-      if (!imageUrl) {
+    // Upload images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      images = await uploadMultipleImages(imageFiles, 'news');
+      if (images.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
     }
 
     const { data, error } = await supabase
       .from('news')
-      .insert([{ ...newsData, image_url: imageUrl }])
+      .insert([{ 
+        ...newsData, 
+        images,
+        image_url: images.length > 0 ? images[0] : null 
+      }])
       .select()
       .single();
     return { data, error };
   },
 
-  update: async (id: string, newsData: Partial<News>, imageFile?: File) => {
+  update: async (id: string, newsData: Partial<News>, imageFiles?: File[]) => {
     let updateData = { ...newsData };
     
-    // Upload new image if provided
-    if (imageFile) {
-      // Get current news to delete old image
+    // Upload new images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      // Get current news to delete old images
       const { data: currentNews } = await supabase
         .from('news')
-        .select('image_url')
+        .select('images, image_url')
         .eq('id', id)
         .single();
 
-      const imageUrl = await uploadImage(imageFile, 'news');
-      if (!imageUrl) {
+      const newImages = await uploadMultipleImages(imageFiles, 'news');
+      if (newImages.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
 
-      // Delete old image if exists
-      if (currentNews?.image_url) {
+      // Delete old images if exist
+      if (currentNews?.images && currentNews.images.length > 0) {
+        await deleteMultipleImages(currentNews.images, 'news');
+      } else if (currentNews?.image_url) {
         await deleteImage(currentNews.image_url, 'news');
       }
 
-      updateData.image_url = imageUrl;
+      updateData.images = newImages;
+      updateData.image_url = newImages[0];
     }
 
     const { data, error } = await supabase
@@ -458,15 +474,17 @@ export const newsOperations = {
   },
 
   delete: async (id: string) => {
-    // Get news to delete associated image
+    // Get news to delete associated images
     const { data: news } = await supabase
       .from('news')
-      .select('image_url')
+      .select('images, image_url')
       .eq('id', id)
       .single();
 
-    // Delete image from storage if exists
-    if (news?.image_url) {
+    // Delete images from storage if exist
+    if (news?.images && news.images.length > 0) {
+      await deleteMultipleImages(news.images, 'news');
+    } else if (news?.image_url) {
       await deleteImage(news.image_url, 'news');
     }
 
@@ -499,48 +517,55 @@ export const newsOperations = {
 };
 
 export const galleryOperations = {
-  create: async (galleryData: Omit<GalleryItem, 'id' | 'created_at' | 'updated_at'>, imageFile?: File) => {
-    let imageUrl = null;
+  create: async (galleryData: Omit<GalleryItem, 'id' | 'created_at' | 'updated_at'>, imageFiles?: File[]) => {
+    let images: string[] = [];
     
-    // Upload image if provided
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile, 'gallery');
-      if (!imageUrl) {
+    // Upload images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      images = await uploadMultipleImages(imageFiles, 'gallery');
+      if (images.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
     }
 
     const { data, error } = await supabase
       .from('gallery')
-      .insert([{ ...galleryData, image_url: imageUrl }])
+      .insert([{ 
+        ...galleryData, 
+        images,
+        image_url: images.length > 0 ? images[0] : null 
+      }])
       .select()
       .single();
     return { data, error };
   },
 
-  update: async (id: string, galleryData: Partial<GalleryItem>, imageFile?: File) => {
+  update: async (id: string, galleryData: Partial<GalleryItem>, imageFiles?: File[]) => {
     let updateData = { ...galleryData };
     
-    // Upload new image if provided
-    if (imageFile) {
-      // Get current gallery item to delete old image
+    // Upload new images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      // Get current gallery item to delete old images
       const { data: currentItem } = await supabase
         .from('gallery')
-        .select('image_url')
+        .select('images, image_url')
         .eq('id', id)
         .single();
 
-      const imageUrl = await uploadImage(imageFile, 'gallery');
-      if (!imageUrl) {
+      const newImages = await uploadMultipleImages(imageFiles, 'gallery');
+      if (newImages.length === 0) {
         return { data: null, error: new Error('خطا در آپلود تصویر') };
       }
 
-      // Delete old image if exists
-      if (currentItem?.image_url) {
+      // Delete old images if exist
+      if (currentItem?.images && currentItem.images.length > 0) {
+        await deleteMultipleImages(currentItem.images, 'gallery');
+      } else if (currentItem?.image_url) {
         await deleteImage(currentItem.image_url, 'gallery');
       }
 
-      updateData.image_url = imageUrl;
+      updateData.images = newImages;
+      updateData.image_url = newImages[0];
     }
 
     const { data, error } = await supabase
@@ -553,15 +578,17 @@ export const galleryOperations = {
   },
 
   delete: async (id: string) => {
-    // Get gallery item to delete associated image
+    // Get gallery item to delete associated images
     const { data: item } = await supabase
       .from('gallery')
-      .select('image_url')
+      .select('images, image_url')
       .eq('id', id)
       .single();
 
-    // Delete image from storage if exists
-    if (item?.image_url) {
+    // Delete images from storage if exist
+    if (item?.images && item.images.length > 0) {
+      await deleteMultipleImages(item.images, 'gallery');
+    } else if (item?.image_url) {
       await deleteImage(item.image_url, 'gallery');
     }
 

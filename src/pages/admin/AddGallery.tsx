@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import MultipleImageUpload from '../../components/MultipleImageUpload';
+import { galleryOperations } from '../../hooks/useSupabase';
 import { Save, X, ImageIcon } from 'lucide-react';
 
 const AddGallery = () => {
@@ -12,14 +14,43 @@ const AddGallery = () => {
     description: '',
     images: [] as File[]
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = ['شیشه و بطری', 'پمپ و اسپری', 'درپوش', 'اسانس', 'پلمپر'];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Gallery item saved:', formData);
-    alert('تصویر با موفقیت اضافه شد!');
-    navigate('/admin/gallery');
+    
+    if (formData.images.length === 0) {
+      alert('لطفاً حداقل یک تصویر انتخاب کنید!');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const galleryData = {
+        title: formData.title,
+        category: formData.category,
+        description: formData.description || null,
+        views: 0,
+        downloads: 0
+      };
+
+      const result = await galleryOperations.create(galleryData, formData.images);
+      
+      if (result.error) {
+        throw result.error;
+      }
+      
+      alert('تصاویر با موفقیت اضافه شدند!');
+      navigate('/admin/gallery');
+    } catch (error) {
+      console.error('Error saving gallery item:', error);
+      alert('خطا در ذخیره تصاویر. لطفاً مجدداً تلاش کنید.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -31,19 +62,13 @@ const AddGallery = () => {
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newImages = Array.from(e.target.files);
-      setFormData({
-        ...formData,
-        images: [...formData.images, ...newImages].slice(0, 5)
-      });
-    }
+    // This function is now handled by MultipleImageUpload component
   };
 
-  const removeImage = (index: number) => {
+  const handleImagesChange = (newImages: File[]) => {
     setFormData({
       ...formData,
-      images: formData.images.filter((_, i) => i !== index)
+      images: newImages
     });
   };
 
@@ -105,50 +130,14 @@ const AddGallery = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-bold mb-4">تصاویر (حداکثر 5 تصویر)</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-400 transition-colors">
-              <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-2">تصاویر را بکشید و رها کنید</p>
-              <p className="text-sm text-gray-500 mb-4">یا کلیک کنید تا فایل انتخاب کنید (PNG/JPG، حداکثر ۵MB)</p>
-              <input 
-                type="file" 
-                accept="image/png,image/jpeg,image/jpg" 
-                multiple
-                onChange={handleImageUpload}
-                className="hidden" 
-                id="gallery-image-upload"
-              />
-              <label 
-                htmlFor="gallery-image-upload"
-                className="bg-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300 cursor-pointer inline-block"
-              >
-                انتخاب تصاویر
-              </label>
-            </div>
-
-            {formData.images.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-lg font-bold text-gray-700 mb-4">تصاویر انتخاب شده:</h4>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {formData.images.map((image, index) => (
-                    <div key={index} className="relative group">
-                      <img 
-                        src={URL.createObjectURL(image)} 
-                        alt={`تصویر ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg shadow-md"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors shadow-lg"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <label className="block text-gray-700 font-bold mb-4">تصاویر گالری (حداکثر 10 تصویر)</label>
+            <MultipleImageUpload
+              images={formData.images}
+              onImagesChange={handleImagesChange}
+              maxImages={10}
+              maxSizePerImage={5}
+              disabled={isSubmitting}
+            />
           </div>
 
           <div className="flex justify-end space-x-reverse space-x-4">
@@ -156,15 +145,26 @@ const AddGallery = () => {
               type="button"
               onClick={() => navigate('/admin/gallery')}
               className="px-6 py-3 bg-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-400 transition-colors duration-300"
+              disabled={isSubmitting}
             >
               انصراف
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-purple-500 text-white rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2"
+              className="px-6 py-3 bg-purple-500 text-white rounded-xl font-bold hover:bg-purple-600 transition-colors duration-300 flex items-center space-x-reverse space-x-2 disabled:opacity-50"
+              disabled={isSubmitting}
             >
-              <Save className="w-5 h-5" />
-              <span>ذخیره</span>
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>در حال ذخیره...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>ذخیره</span>
+                </>
+              )}
             </button>
           </div>
         </form>

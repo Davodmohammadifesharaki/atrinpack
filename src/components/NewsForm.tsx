@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNewsItem, newsOperations } from '../hooks/useSupabase';
+import { getImageUrl, getAllImages } from '../utils/imageUpload';
+import MultipleImageUpload from './MultipleImageUpload';
 import { Save, X, ImageIcon } from 'lucide-react';
 
 interface NewsFormProps {
@@ -22,7 +24,7 @@ const NewsForm: React.FC<NewsFormProps> = ({ mode, newsId, onSave, onCancel }) =
     date: new Date().toISOString().split('T')[0],
     featured: false,
     visible: true,
-    image: null as File | null
+    images: [] as File[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,9 +64,9 @@ const NewsForm: React.FC<NewsFormProps> = ({ mode, newsId, onSave, onCancel }) =
 
       let result;
       if (mode === 'add') {
-        result = await newsOperations.create(newsData, formData.image || undefined);
+        result = await newsOperations.create(newsData, formData.images.length > 0 ? formData.images : undefined);
       } else {
-        result = await newsOperations.update(newsId!, newsData, formData.image || undefined);
+        result = await newsOperations.update(newsId!, newsData, formData.images.length > 0 ? formData.images : undefined);
       }
 
       if (result.error) {
@@ -94,23 +96,13 @@ const NewsForm: React.FC<NewsFormProps> = ({ mode, newsId, onSave, onCancel }) =
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size <= 5 * 1024 * 1024) { // 5MB limit
-        setFormData({
-          ...formData,
-          image: file
-        });
-      } else {
-        alert('حجم فایل نباید بیشتر از ۵ مگابایت باشد!');
-      }
-    }
+    // This function is now handled by MultipleImageUpload component
   };
 
-  const removeImage = () => {
+  const handleImagesChange = (newImages: File[]) => {
     setFormData({
       ...formData,
-      image: null
+      images: newImages
     });
   };
 
@@ -222,62 +214,15 @@ const NewsForm: React.FC<NewsFormProps> = ({ mode, newsId, onSave, onCancel }) =
         </div>
 
         <div>
-          <label className="block text-gray-700 font-bold mb-4">تصویر خبر</label>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors">
-            <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-2">تصویر خبر را بکشید و رها کنید</p>
-            <p className="text-sm text-gray-500 mb-4">یا کلیک کنید تا فایل انتخاب کنید (PNG/JPG، حداکثر ۵MB)</p>
-            <input 
-              type="file" 
-              accept="image/png,image/jpeg,image/jpg" 
-              onChange={handleImageUpload}
-              className="hidden" 
-              id="news-image-upload"
-              disabled={isSubmitting}
-            />
-            <label 
-              htmlFor="news-image-upload"
-              className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors duration-300 cursor-pointer inline-block"
-            >
-              انتخاب تصویر
-            </label>
-          </div>
-
-          {/* نمایش تصویر فعلی در حالت ویرایش */}
-          {mode === 'edit' && existingNews?.image_url && !formData.image && (
-            <div className="mt-6">
-              <h4 className="text-lg font-bold text-gray-700 mb-4">تصویر فعلی:</h4>
-              <div className="relative inline-block">
-                <img 
-                  src={existingNews.image_url} 
-                  alt="تصویر فعلی"
-                  className="w-32 h-32 object-cover rounded-lg shadow-md"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* نمایش تصویر جدید انتخاب شده */}
-          {formData.image && (
-            <div className="mt-6">
-              <h4 className="text-lg font-bold text-gray-700 mb-4">تصویر جدید:</h4>
-              <div className="relative inline-block">
-                <img 
-                  src={URL.createObjectURL(formData.image)} 
-                  alt="تصویر جدید"
-                  className="w-32 h-32 object-cover rounded-lg shadow-md"
-                />
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors shadow-lg"
-                  disabled={isSubmitting}
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
+          <label className="block text-gray-700 font-bold mb-4">تصاویر خبر (حداکثر 5 تصویر)</label>
+          <MultipleImageUpload
+            images={formData.images}
+            onImagesChange={handleImagesChange}
+            maxImages={5}
+            maxSizePerImage={5}
+            existingImages={mode === 'edit' && existingNews ? getAllImages(existingNews.images, existingNews.image_url) : []}
+            disabled={isSubmitting}
+          />
         </div>
 
         <div className="flex items-center space-x-reverse space-x-4 p-6 bg-gray-50 rounded-xl">

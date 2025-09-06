@@ -60,3 +60,25 @@ export const uploadMultipleImages = async (files: File[], bucket: string = 'imag
   const results = await Promise.all(uploadPromises);
   return results.filter((url): url is string => url !== null);
 };
+
+export const deleteMultipleImages = async (urls: string[], bucket: string = 'images'): Promise<boolean[]> => {
+  const deletePromises = urls.map(url => deleteImage(url, bucket));
+  const results = await Promise.all(deletePromises);
+  return results;
+};
+
+export const getImageUrl = (images: string[] | undefined, fallback?: string): string => {
+  if (images && images.length > 0) {
+    return images[0];
+  }
+  return fallback || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop';
+};
+
+export const getAllImages = (images: string[] | undefined, imageUrl?: string): string[] => {
+  if (images && images.length > 0) {
+    return images;
+  }
+  if (imageUrl) {
+    return [imageUrl];
+  }
+  return [];

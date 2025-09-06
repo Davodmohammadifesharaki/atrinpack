@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProducts } from '../hooks/useSupabase';
+import { getImageUrl } from '../utils/imageUpload';
 import { Palette, RotateCcw, Download, Phone } from 'lucide-react';
 
 interface BottleOption {
@@ -46,7 +47,7 @@ const MixMatchDesigner = () => {
       volume: p.volume || 'نامشخص',
       material: p.material || 'نامشخص',
       color: p.color || 'نامشخص',
-      image: p.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+      image: getImageUrl(p.images, p.image_url)
     }));
 
   // Get pumps from products
@@ -58,7 +59,7 @@ const MixMatchDesigner = () => {
       type: p.category,
       color: p.color || 'نامشخص',
       material: p.material || 'نامشخص',
-      image: p.image_url || 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=200&h=200&fit=crop'
+      image: getImageUrl(p.images, p.image_url)
     }));
 
   // Get caps from products
@@ -69,7 +70,7 @@ const MixMatchDesigner = () => {
       name: p.name,
       material: p.material || 'نامشخص',
       color: p.color || 'نامشخص',
-      image: p.image_url || 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&h=150&fit=crop'
+      image: getImageUrl(p.images, p.image_url)
     }));
 
   const resetSelection = () => {

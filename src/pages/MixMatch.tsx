@@ -17,7 +17,7 @@ const MixMatch = () => {
               <Palette className="w-12 h-12 ml-4" />
               <h1 className="text-4xl lg:text-5xl font-black">Mix & Match</h1>
             </div>
-            <p className="text-xl text-purple-100">طراحی اختصاصی محصولات بسته‌بندی با پیش‌نمایش زنده</p>
+            <p className="text-xl text-purple-100">طراحی اختصاصی محصولات بسته‌بندی عطرین پک با پیش‌نمایش زنده</p>
           </div>
         </div>
       </section>
@@ -70,7 +70,7 @@ const MixMatch = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-black mb-4">مزایای طراحی اختصاصی</h2>
-            <p className="text-xl text-amber-100">چرا Mix & Match آترین پک؟</p>
+            <p className="text-xl text-amber-100">چرا Mix & Match عطرین پک؟</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

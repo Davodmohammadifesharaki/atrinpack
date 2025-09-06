@@ -4,9 +4,11 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContactModal from '../components/ContactModal';
 import ProductCard from '../components/ProductCard';
+import ImageGallery from '../components/ImageGallery';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useProduct, useProducts } from '../hooks/useSupabase';
+import { getImageUrl, getAllImages } from '../utils/imageUpload';
 import { 
   Star, 
   Heart, 
@@ -95,24 +97,26 @@ const ProductDetail = () => {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="relative">
-              <img 
-                src={product.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=600&fit=crop'} 
-                alt={product.name}
-                className="w-full h-96 object-cover rounded-2xl shadow-lg"
+              <ImageGallery
+                images={getAllImages(product.images, product.image_url)}
+                title={product.name}
+                className="h-96"
+                showThumbnails={true}
+                allowDownload={false}
               />
-              {product.is_new && (
-                <span className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                  جدید
-                </span>
-              )}
-              {product.is_featured && (
-                <span className="absolute top-4 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                  ویژه
-                </span>
-              )}
+              <div className="absolute top-4 right-4 flex flex-col gap-2">
+                {product.is_new && (
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    جدید
+                  </span>
+                )}
+                {product.is_featured && (
+                  <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    ویژه
+                  </span>
+                )}
+              </div>
             </div>
-            
-            {/* Additional images can be added here if needed */}
           </div>
 
           {/* Product Info */}
@@ -297,7 +301,8 @@ const ProductDetail = () => {
                   id={relatedProduct.id}
                   name={relatedProduct.name}
                   category={relatedProduct.category}
-                  image={relatedProduct.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop'}
+                  image={relatedProduct.image_url}
+                  images={relatedProduct.images}
                   price={relatedProduct.price}
                   isNew={relatedProduct.is_new}
                   isFeatured={relatedProduct.is_featured}

@@ -1,13 +1,15 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../utils/imageUpload';
 import { Heart } from 'lucide-react';
 
 interface ProductCardProps {
   id: string;
   name: string;
   category: string;
-  image: string;
+  image?: string;
+  images?: string[];
   price?: string;
   isNew?: boolean;
   isFeatured?: boolean;
@@ -18,6 +20,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   name, 
   category, 
   image, 
+  images,
   price,
   isNew = false,
   isFeatured = false
@@ -28,11 +31,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
     navigate(`/product/${id}`);
   };
 
+  const primaryImage = getImageUrl(images, image);
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
       <div className="relative aspect-square overflow-hidden">
         <img 
-          src={image} 
+          src={primaryImage} 
           alt={name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />

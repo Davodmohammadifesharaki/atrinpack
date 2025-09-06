@@ -2,9 +2,11 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ImageGallery from '../components/ImageGallery';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useNewsItem, useNews } from '../hooks/useSupabase';
+import { getImageUrl, getAllImages } from '../utils/imageUpload';
 import { Calendar, Tag, Share2, ArrowRight } from 'lucide-react';
 
 const NewsDetail = () => {
@@ -56,11 +58,15 @@ const NewsDetail = () => {
         <div className="max-w-4xl mx-auto">
           {/* Article Header */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-            <img 
-              src={news.image_url || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop'}
-              alt={news.title}
-              className="w-full h-64 object-cover"
-            />
+            <div className="w-full h-64">
+              <ImageGallery
+                images={getAllImages(news.images, news.image_url)}
+                title={news.title}
+                className="h-full"
+                showThumbnails={false}
+                allowDownload={false}
+              />
+            </div>
             <div className="p-8">
               <h1 className="text-3xl font-black text-gray-800 mb-4">
                 {news.title}
@@ -109,7 +115,7 @@ const NewsDetail = () => {
                 {relatedNews.map((relatedNewsItem) => (
                   <div key={relatedNewsItem.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                     <img 
-                      src={relatedNewsItem.image_url || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=200&fit=crop'}
+                      src={getImageUrl(relatedNewsItem.images, relatedNewsItem.image_url)}
                       alt={relatedNewsItem.title}
                       className="w-full h-48 object-cover"
                     />

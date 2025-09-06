@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ImageGallery from '../components/ImageGallery';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useGallery } from '../hooks/useSupabase';
+import { getImageUrl, getAllImages } from '../utils/imageUpload';
 import { Image, Camera, Filter, Grid, List, Eye, X } from 'lucide-react';
 
 const Gallery = () => {
@@ -113,7 +115,7 @@ const Gallery = () => {
               >
                 <div className="relative overflow-hidden">
                   <img 
-                    src={item.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop'} 
+                    src={getImageUrl(item.images, item.image_url)} 
                     alt={item.title}
                     className="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -122,7 +124,13 @@ const Gallery = () => {
                       <Eye className="w-12 h-12 text-white" />
                     </div>
                   </div>
-                </div>
+                  {/* Image Count Badge */}
+                  {getAllImages(item.images, item.image_url).length > 1 && (
+                    <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      {getAllImages(item.images, item.image_url).length} تصویر
+                    </div>
+                  )}
+                  </div>
 
                 <div className="p-6">
                   <h3 className="text-lg font-black text-gray-800 mb-2">{item.title}</h3>
@@ -151,19 +159,22 @@ const Gallery = () => {
       {/* Image Modal */}
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="relative">
-              <img 
-                src={selectedImage.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&h=600&fit=crop'}
-                alt={selectedImage.title}
-                className="w-full h-96 object-cover"
-              />
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative p-4">
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute top-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors"
+                className="absolute top-6 left-6 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors z-10"
               >
                 <X className="w-6 h-6" />
               </button>
+              
+              <ImageGallery
+                images={getAllImages(selectedImage.images, selectedImage.image_url)}
+                title={selectedImage.title}
+                className="mb-4"
+                showThumbnails={true}
+                allowDownload={true}
+              />
             </div>
             <div className="p-6">
               <h2 className="text-2xl font-black text-gray-800 mb-2">{selectedImage.title}</h2>
