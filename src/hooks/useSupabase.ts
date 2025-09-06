@@ -857,3 +857,4 @@ export const userOperations = {
       .single();
     return { data, error };
   }
+}
