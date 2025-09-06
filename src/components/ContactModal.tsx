@@ -79,22 +79,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             <a
               href={contactInfo.socialMedia.whatsapp}
               target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-reverse space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-all duration-300 group"
-            >
-              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors duration-300">
-                <MessageCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-800">واتساپ</div>
-                <div className="text-green-600 font-bold">پاسخگویی سریع</div>
-                <div className="text-sm text-gray-600">24 ساعته</div>
-              </div>
-            </a>
-          )}
-            </a>
-          )}
-
           {/* Email */}
           <a
             href={`mailto:${contactInfo.emails?.[0] || 'info@atrinpack.com'}`}
