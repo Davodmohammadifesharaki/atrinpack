@@ -501,4 +501,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export { AdminSettings as default };
