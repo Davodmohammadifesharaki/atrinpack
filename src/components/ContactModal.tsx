@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { useSettings } from '../hooks/useSupabase';
 import { X, Phone, Mail, MessageCircle, Instagram, Facebook, Linkedin } from 'lucide-react';
+import { useSettings } from '../hooks/useSupabase';
 
 interface ContactModalProps {
   isOpen: boolean;
