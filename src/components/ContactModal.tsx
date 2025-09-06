@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useSettings } from '../hooks/useSupabase';
-import { useSettings } from '../hooks/useSupabase';
 import { X, Phone, Mail, MessageCircle, Instagram, Facebook, Linkedin } from 'lucide-react';
 
 interface ContactModalProps {
@@ -10,19 +9,6 @@ interface ContactModalProps {
 }
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
-  const { settings: contactSettings } = useSettings('contact_info');
-  
-  const contactInfo = contactSettings || {
-    phones: ['021-12345678', '09123456789'],
-    emails: ['info@atrinpack.com'],
-    socialMedia: {
-      whatsapp: '',
-      instagram: '',
-      facebook: '',
-      linkedin: ''
-    }
-  };
-
   const { settings: contactSettings } = useSettings('contact_info');
   
   const contactInfo = contactSettings || {
@@ -152,12 +138,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <a
                   href={contactInfo.socialMedia.linkedin}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                >
-                  <Linkedin className="w-6 h-6 text-white" />
-                </a>
-              )}
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
                 >
