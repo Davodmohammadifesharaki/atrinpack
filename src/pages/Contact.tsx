@@ -89,6 +89,7 @@ const Contact = () => {
       facebook: '',
       linkedin: ''
     }
+  };
 
   if (contactLoading) {
     return (
@@ -146,27 +147,15 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {(contactInfo.addresses || []).map((address, index) => (
-                  <div key={index} className="flex items-start space-x-reverse space-x-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-6 h-6 text-red-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 mb-1">{address.name || 'آدرس'}</h3>
-                      <p className="text-gray-600">{address.address}</p>
-                      {address.mapUrl && (
-                        <a
-                          href={address.mapUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm font-bold"
-                        >
-                          مشاهده در نقشه
-                        </a>
-                      )}
-                    </div>
+                <div className="flex items-start space-x-reverse space-x-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-green-600" />
                   </div>
-                ))}
+                  <div>
+                    <h3 className="font-bold text-gray-800 mb-1">ایمیل</h3>
+                    {(contactInfo.emails || []).map((email, index) => (
+                      <p key={index} className="text-gray-600">
+                        <a href={`mailto:${email}`} className="hover:text-green-600">{email}</a>
                       </p>
                     ))}
                   </div>
@@ -385,37 +374,22 @@ const Contact = () => {
                     required
                   ></textarea>
                 </div>
-                  {contactInfo.socialMedia?.whatsapp && (
-                    <a 
-                      href={contactInfo.socialMedia.whatsapp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                    >
-                      <MessageCircle className="w-6 h-6 text-white" />
-                    </a>
-                  )}
-                  {contactInfo.socialMedia?.instagram && (
-                    <a 
-                      href={contactInfo.socialMedia.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                    >
-                      <Instagram className="w-6 h-6 text-white" />
-                    </a>
-                  )}
-                  {contactInfo.socialMedia?.facebook && (
-                    <a 
-                      href={contactInfo.socialMedia.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300"
-                    >
-                      <Facebook className="w-6 h-6 text-white" />
-                    </a>
-                  )}
-                  {contactInfo.socialMedia?.linkedin && (
+
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-bold hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center justify-center space-x-reverse space-x-2"
+                >
+                  <Send className="w-5 h-5" />
+                  <span>ارسال پیام</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Map Section */}
+            <div className="mt-8 bg-white p-8 rounded-2xl shadow-lg">
+              <h3 className="text-xl font-black text-gray-800 mb-4">موقعیت ما</h3>
+              <div className="bg-gray-100 rounded-xl p-8 text-center">
+                <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-sm mb-4">{contactInfo.addresses?.[0]?.address || 'آدرس موجود نیست'}</p>
                 {contactInfo.addresses?.[0]?.mapUrl && (
                   <a
