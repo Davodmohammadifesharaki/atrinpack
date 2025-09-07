@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
+import DashboardChart from '../../components/DashboardChart';
 import { useAllProducts, useAllNews, useGallery, useContactMessages } from '../../hooks/useSupabase';
 import { 
   Package, 
@@ -383,26 +384,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* Performance Chart Placeholder */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 lg:p-8">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl lg:text-2xl font-black text-gray-800 flex items-center">
-              <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 ml-2 lg:ml-3 text-indigo-500" />
-              نمودار عملکرد
-            </h2>
-            <div className="flex items-center space-x-reverse space-x-2">
-              <Calendar className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-600 text-xs lg:text-sm">۳۰ روز گذشته</span>
-            </div>
-          </div>
-          <div className="h-48 lg:h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-            <div className="text-center text-gray-500">
-              <TrendingUp className="w-12 h-12 lg:w-16 lg:h-16 mx-auto mb-4" />
-              <p className="text-base lg:text-lg font-bold">نمودار عملکرد سایت</p>
-              <p className="text-xs lg:text-sm">آمار بازدید، فروش و تعاملات</p>
-              <p className="text-xs mt-2 text-gray-400">در نسخه‌های بعدی اضافه خواهد شد</p>
-            </div>
-          </div>
-        </div>
+        <DashboardChart 
+          products={products}
+          news={news}
+          gallery={gallery}
+          messages={messages}
+        />
       </div>
     </AdminLayout>
   );
