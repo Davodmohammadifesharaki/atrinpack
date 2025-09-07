@@ -60,7 +60,7 @@ const AdminLogin = () => {
           role: profile.role,
           status: profile.status,
           username: profile.username || 'admin',
-          fullName: profile.full_name || 'مدیر آترین پک'
+          fullName: profile.full_name || 'مدیر عطرین پک'
         }));
 
         navigate('/admin/dashboard');
