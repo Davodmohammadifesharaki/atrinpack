@@ -353,6 +353,26 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Link>
               ))}
               
+              {/* Mobile Bottom Actions */}
+              <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
+                <Link
+                  to="/"
+                  onClick={toggleMobileMenu}
+                  className="w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-xl text-blue-600 hover:bg-blue-50 transition-all duration-300 group"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="font-bold">بازگشت به سایت</span>
+                </Link>
+                
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300 group"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span className="font-bold">خروج</span>
+                </button>
+              </div>
+              
               {/* Mobile Bottom Actions - moved here */}
               <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
                 <Link
