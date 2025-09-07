@@ -673,7 +673,7 @@ export const useSettings = (key?: string) => {
       if (key) {
         query = query.eq('key', key);
         const { data, error } = await query.single();
-        if (error) throw error;
+        if (error && error.code !== 'PGRST116') throw error;
         setSettings(data ? JSON.parse(data.value || '{}') : {});
       } else {
         const { data, error } = await query;
