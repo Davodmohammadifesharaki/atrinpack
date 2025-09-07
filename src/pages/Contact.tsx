@@ -4,7 +4,6 @@ import Footer from '../components/Footer';
 import ContactModal from '../components/ContactModal';
 import { contactOperations, useSettings } from '../hooks/useSupabase';
 import LoadingSpinner from '../components/LoadingSpinner';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { 
   Phone, 
   Mail, 
