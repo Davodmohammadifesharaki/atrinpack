@@ -21,7 +21,6 @@ import {
 
 const Contact = () => {
   const { settings: contactSettings, loading: contactLoading } = useSettings('contact_info');
-  const { settings: contactSettings, loading: contactLoading } = useSettings('contact_info');
   const [formData, setFormData] = useState({
     name: '',
     company: '',
