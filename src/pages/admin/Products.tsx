@@ -117,15 +117,15 @@ const AdminProducts = () => {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               <div className="bg-white p-6 rounded-2xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-bold">کل محصولات</p>
-                    <p className="text-3xl font-black text-gray-800 mt-2">{products.length}</p>
+                    <p className="text-gray-600 text-xs lg:text-sm font-bold">کل محصولات</p>
+                    <p className="text-2xl lg:text-3xl font-black text-gray-800 mt-2">{products.length}</p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Package className="w-6 h-6 text-blue-600" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Package className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
                   </div>
                 </div>
               </div>
@@ -133,23 +133,11 @@ const AdminProducts = () => {
               <div className="bg-white p-6 rounded-2xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-bold">محصولات فعال</p>
-                    <p className="text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.visible).length}</p>
+                    <p className="text-gray-600 text-xs lg:text-sm font-bold">محصولات فعال</p>
+                    <p className="text-2xl lg:text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.visible).length}</p>
                   </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl shadow-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-600 text-sm font-bold">محصولات ویژه</p>
-                    <p className="text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.is_featured).length}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                    <Star className="w-6 h-6 text-amber-600" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-600" />
                   </div>
                 </div>
               </div>
@@ -157,11 +145,23 @@ const AdminProducts = () => {
               <div className="bg-white p-6 rounded-2xl shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-bold">محصولات جدید</p>
-                    <p className="text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.is_new).length}</p>
+                    <p className="text-gray-600 text-xs lg:text-sm font-bold">محصولات ویژه</p>
+                    <p className="text-2xl lg:text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.is_featured).length}</p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <Star className="w-5 h-5 lg:w-6 lg:h-6 text-amber-600" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600 text-xs lg:text-sm font-bold">محصولات جدید</p>
+                    <p className="text-2xl lg:text-3xl font-black text-gray-800 mt-2">{products.filter(p => p.is_new).length}</p>
+                  </div>
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 lg:w-6 lg:h-6 text-purple-600" />
                   </div>
                 </div>
               </div>
@@ -169,7 +169,7 @@ const AdminProducts = () => {
 
             {/* Filters */}
             <div className="bg-white p-6 rounded-2xl shadow-lg">
-              <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="flex flex-col xl:flex-row gap-4 items-center justify-between">
                 <div className="relative flex-1 max-w-md">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -207,7 +207,7 @@ const AdminProducts = () => {
                     ))}
                   </select>
 
-                  <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                  <div className="flex items-center gap-1 lg:gap-2 bg-gray-100 rounded-xl p-1">
                     <button
                       onClick={() => setViewMode('grid')}
                       className={`p-2 rounded-lg transition-colors ${
@@ -238,32 +238,32 @@ const AdminProducts = () => {
               </div>
 
               {viewMode === 'list' ? (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto -mx-2 lg:mx-0">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">محصول</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">دسته‌بندی</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">قیمت</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">موجودی</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">وضعیت</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">آمار</th>
-                        <th className="px-6 py-4 text-right text-sm font-bold text-gray-700">عملیات</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[200px]">محصول</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[120px]">دسته‌بندی</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[100px]">قیمت</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[80px]">موجودی</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[100px]">وضعیت</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[100px]">آمار</th>
+                        <th className="px-3 lg:px-6 py-4 text-right text-xs lg:text-sm font-bold text-gray-700 min-w-[150px]">عملیات</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {filteredProducts.map((product) => (
                         <tr key={product.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
+                          <td className="px-3 lg:px-6 py-4">
                             <div className="flex items-center space-x-reverse space-x-3">
                               <img 
                                 src={product.image_url || 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=200&h=200&fit=crop'} 
                                 alt={product.name}
-                                className="w-16 h-16 object-cover rounded-lg"
+                                className="w-12 h-12 lg:w-16 lg:h-16 object-cover rounded-lg"
                               />
                               <div>
-                                <div className="font-bold text-gray-800">{product.name}</div>
-                                <div className="text-sm text-gray-600">کد: {product.id}</div>
+                                <div className="font-bold text-gray-800 text-sm lg:text-base line-clamp-2">{product.name}</div>
+                                <div className="text-xs lg:text-sm text-gray-600">کد: {product.id.slice(0, 8)}...</div>
                                 <div className="flex items-center space-x-reverse space-x-2 mt-1">
                                   {product.is_new && (
                                     <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-bold">جدید</span>
@@ -278,20 +278,20 @@ const AdminProducts = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">
+                          <td className="px-3 lg:px-6 py-4 text-xs lg:text-sm text-gray-900">
                             <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
                               {product.category}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-900 font-bold">
+                          <td className="px-3 lg:px-6 py-4 text-xs lg:text-sm text-gray-900 font-bold">
                             {product.price || 'استعلام قیمت'}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">
+                          <td className="px-3 lg:px-6 py-4 text-xs lg:text-sm text-gray-900">
                             <span className="font-bold text-blue-600">
                               {product.min_order || 1} عدد
                             </span>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-3 lg:px-6 py-4">
                             <button
                               onClick={() => toggleStatus(product.id, product.visible)}
                               className={`px-3 py-1 rounded-full text-xs font-bold transition-colors flex items-center ${getStatusColor(product.visible)}`}
@@ -300,16 +300,16 @@ const AdminProducts = () => {
                               <span className="mr-1">{getStatusText(product.visible)}</span>
                             </button>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
-                            <div className="text-sm text-gray-600">
+                          <td className="px-3 lg:px-6 py-4 text-xs lg:text-sm text-gray-600">
+                            <div className="text-xs lg:text-sm text-gray-600">
                               {new Date(product.created_at).toLocaleDateString('fa-IR')}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center space-x-reverse space-x-2">
+                          <td className="px-3 lg:px-6 py-4">
+                            <div className="flex items-center space-x-reverse space-x-1 lg:space-x-2">
                               <button 
                                 onClick={() => navigate(`/admin/products/${product.id}`)}
-                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                                className="p-1.5 lg:p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                                 title="مشاهده محصول"
                               >
                                 <Eye className="w-4 h-4" />
@@ -327,14 +327,14 @@ const AdminProducts = () => {
                               </button>
                               <button 
                                 onClick={() => navigate(`/admin/products/edit/${product.id}`)}
-                                className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                                className="p-1.5 lg:p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
                                 title="ویرایش محصول"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
                               <button 
                                 onClick={() => handleDeleteProduct(product.id)}
-                                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                className="p-1.5 lg:p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                                 title="حذف محصول"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -347,7 +347,7 @@ const AdminProducts = () => {
                   </table>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                   {filteredProducts.map((product) => (
                     <div key={product.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="relative">
@@ -368,9 +368,9 @@ const AdminProducts = () => {
 
                       <div className="p-4">
                         <h3 className="font-bold text-gray-800 mb-2 line-clamp-2">{product.name}</h3>
-                        <div className="text-sm text-gray-600 space-y-1 mb-3">
+                        <div className="text-xs lg:text-sm text-gray-600 space-y-1 mb-3">
                           <div>دسته: {product.category}</div>
-                          <div>کد: {product.id}</div>
+                          <div>کد: {product.id.slice(0, 8)}...</div>
                           <div>قیمت: {product.price || 'استعلام قیمت'}</div>
                           <div>حداقل سفارش: {product.min_order || 1} عدد</div>
                         </div>
@@ -389,26 +389,26 @@ const AdminProducts = () => {
                           <div className="flex items-center space-x-reverse space-x-1">
                             <button 
                               onClick={() => navigate(`/admin/products/${product.id}`)}
-                              className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                              className="p-1.5 lg:p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => navigate(`/admin/products/edit/${product.id}`)}
-                              className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                              className="p-1.5 lg:p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleDeleteProduct(product.id)}
-                              className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                              className="p-1.5 lg:p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                           <button 
                             onClick={() => toggleFeatured(product.id, product.is_featured)}
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-1.5 lg:p-2 rounded-lg transition-colors ${
                               product.is_featured 
                                 ? 'bg-amber-100 text-amber-600 hover:bg-amber-200' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
