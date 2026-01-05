@@ -1,178 +1,73 @@
-# عطرین پک - سایت شرکتی بسته‌بندی لوکس
+# Welcome to your Lovable project
 
-## 🚀 درباره پروژه
+## Project info
 
-این پروژه یک سایت کامل شرکتی برای عطرین پک است که شامل:
+**URL**: https://lovable.dev/projects/5b7169bb-f83e-4ab8-8b7f-866904b22889
 
-- **سایت عمومی** با صفحات محصولات، اخبار، گالری و تماس
-- **پنل مدیریت** برای ادمین‌ها و ویرایشگران
-- **پنل مشتری** برای مشتریان ثبت‌نام شده
-- **سیستم Mix & Match** برای طراحی اختصاصی محصولات
+## How can I edit this code?
 
-## 🛠 تکنولوژی‌های استفاده شده
+There are several ways of editing your application.
 
-- **Frontend:** React 18 + TypeScript + Vite
-- **Styling:** Tailwind CSS + shadcn/ui
-- **Backend:** Supabase (PostgreSQL + Authentication + Storage)
-- **Deployment:** Netlify
-- **Icons:** Lucide React
-- **Routing:** React Router DOM
+**Use Lovable**
 
-## 📦 نصب و راه‌اندازی
+Simply visit the [Lovable Project](https://lovable.dev/projects/5b7169bb-f83e-4ab8-8b7f-866904b22889) and start prompting.
 
-### پیش‌نیازها
-- Node.js 18+
-- npm یا yarn
-- حساب Supabase
-- حساب Netlify (برای دیپلوی)
+Changes made via Lovable will be committed automatically to this repo.
 
-### مراحل نصب
+**Use your preferred IDE**
 
-1. **کلون کردن پروژه:**
-```bash
-git clone <repository-url>
-cd atrin-pack-website
-```
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-2. **نصب وابستگی‌ها:**
-```bash
-npm install
-```
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-3. **تنظیم متغیرهای محیطی:**
-```bash
-cp .env.example .env
-```
+Follow these steps:
 
-سپس فایل `.env` را ویرایش کنید:
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-4. **راه‌اندازی دیتابیس:**
-- در پنل Supabase، SQL Editor را باز کنید
-- محتوای فایل `supabase/migrations/create_initial_schema.sql` را اجرا کنید
-- محتوای فایل `supabase/migrations/insert_sample_data.sql` را اجرا کنید
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-5. **راه‌اندازی Storage:**
-در پنل Supabase، بخش Storage:
-- یک bucket با نام `images` ایجاد کنید
-- آن را Public قرار دهید
+# Step 3: Install the necessary dependencies.
+npm i
 
-6. **اجرای پروژه:**
-```bash
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-## 🔐 حساب‌های تست
+**Edit a file directly in GitHub**
 
-### ادمین:
-- ایمیل: `admin@atrinpack.com`
-- رمز عبور: `admin123456`
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### ویرایشگر:
-- ایمیل: `editor@atrinpack.com`
-- رمز عبور: `editor123456`
+**Use GitHub Codespaces**
 
-### مشتری:
-- ایمیل: `customer@example.com`
-- رمز عبور: `customer123456`
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## 📁 ساختار پروژه
+## What technologies are used for this project?
 
-```
-src/
-├── components/          # کامپوننت‌های قابل استفاده مجدد
-├── pages/              # صفحات اصلی سایت
-│   ├── admin/          # صفحات پنل مدیریت
-│   └── customer/       # صفحات پنل مشتری
-├── hooks/              # Custom hooks
-├── lib/                # کتابخانه‌ها و تنظیمات
-├── utils/              # توابع کمکی
-└── types/              # تعریف انواع TypeScript
-```
+This project is built with:
 
-## 🌐 دیپلوی روی Netlify
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-1. **Push کردن کد به Git:**
-```bash
-git add .
-git commit -m "Ready for production"
-git push origin main
-```
+## How can I deploy this project?
 
-2. **اتصال به Netlify:**
-- وارد [Netlify](https://netlify.com) شوید
-- "Add new site" → "Import an existing project"
-- مخزن Git خود را انتخاب کنید
+Simply open [Lovable](https://lovable.dev/projects/5b7169bb-f83e-4ab8-8b7f-866904b22889) and click on Share -> Publish.
 
-3. **تنظیم Build Settings:**
-- Build command: `npm run build`
-- Publish directory: `dist`
+## Can I connect a custom domain to my Lovable project?
 
-4. **تنظیم Environment Variables:**
-در تنظیمات سایت Netlify:
-```
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+Yes, you can!
 
-## 🎯 ویژگی‌های کلیدی
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-### سایت عمومی:
-- ✅ صفحه اصلی با اسلایدر Hero
-- ✅ کاتالوگ محصولات با فیلترهای پیشرفته
-- ✅ سیستم Mix & Match برای طراحی اختصاصی
-- ✅ بخش اخبار و مقالات
-- ✅ گالری تصاویر
-- ✅ صفحه درباره ما
-- ✅ فرم تماس
-
-### پنل مدیریت:
-- ✅ داشبورد با آمار و نمودارها
-- ✅ مدیریت محصولات (CRUD)
-- ✅ مدیریت اخبار (CRUD)
-- ✅ مدیریت گالری (CRUD)
-- ✅ مدیریت کاربران
-- ✅ مدیریت پیام‌های تماس
-- ✅ تنظیمات سایت
-- ✅ سیستم اعلان‌ها
-
-### پنل مشتری:
-- ✅ داشبورد شخصی
-- ✅ مدیریت سفارشات
-- ✅ علاقه‌مندی‌ها
-- ✅ تاریخچه خریدها
-
-## 🔒 امنیت
-
-- ✅ Row Level Security (RLS) در Supabase
-- ✅ احراز هویت امن
-- ✅ محافظت از روت‌های حساس
-- ✅ اعتبارسنجی ورودی‌ها
-- ✅ آپلود امن فایل‌ها
-
-## 📱 Responsive Design
-
-- ✅ طراحی کاملاً ریسپانسیو
-- ✅ بهینه‌سازی برای موبایل
-- ✅ تجربه کاربری عالی در تمام دستگاه‌ها
-
-## 🎨 طراحی
-
-- ✅ فونت فارسی وزیری
-- ✅ طراحی مدرن و زیبا
-- ✅ انیمیشن‌ها و ترانزیشن‌ها
-- ✅ رنگ‌بندی حرفه‌ای
-- ✅ آیکون‌های مناسب
-
-## 📞 پشتیبانی
-
-برای سوالات و پشتیبانی:
-- ایمیل: info@atrinpack.com
-- تلفن: 021-12345678
-
----
-
-**ساخته شده با ❤️ برای عطرین پک**
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
